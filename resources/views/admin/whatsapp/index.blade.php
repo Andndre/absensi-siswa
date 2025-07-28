@@ -200,14 +200,20 @@
                         </div>
                         <div class="col-md-6">
                             <div class="alert alert-info">
-                                <h6><i class="bi bi-info-circle me-2"></i>Cara Konfigurasi:</h6>
+                                <h6><i class="bi bi-info-circle me-2"></i>Cara Konfigurasi WhatsApp:</h6>
                                 <ol class="mb-0">
                                     <li>Daftar akun di <a href="https://fonnte.com" target="_blank">fonnte.com</a></li>
-                                    <li>Dapatkan token API dari dashboard Fonnte</li>
-                                    <li>Tambahkan <code>FONNTE_TOKEN=your_token</code> di file .env</li>
-                                    <li>Restart aplikasi</li>
+                                    <li>Login ke dashboard Fonnte</li>
+                                    <li>Klik menu "Device" dan hubungkan WhatsApp dengan scan QR</li>
+                                    <li>Pada daftar device klik tombol "Token" untuk menyalin token Anda</li>
+                                    <li>Buka menu <a href="{{ route('admin.settings.index') }}">Pengaturan</a></li>
+                                    <li>Pada tab WhatsApp, masukkan token di field "Fonnte API Token"</li>
+                                    <li>Klik "Simpan Pengaturan"</li>
                                     <li>Test koneksi menggunakan form di atas</li>
                                 </ol>
+                                <small class="text-muted mt-2 d-block">
+                                    <i class="bi bi-info-circle"></i> Pastikan nomor WhatsApp yang digunakan sudah terdaftar di Fonnte dan dalam keadaan aktif.
+                                </small>
                             </div>
                         </div>
                     </div>

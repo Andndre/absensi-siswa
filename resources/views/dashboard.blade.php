@@ -8,7 +8,16 @@
                 <h1 class="h3 text-primary">
                     <i class="bi bi-speedometer2 me-2"></i>Dashboard Admin
                 </h1>
-                <small class="text-muted">{{ now()->format('l, d F Y') }}</small>
+                <small class="text-muted">
+                    <?php
+                        setlocale(LC_TIME, 'id_ID.utf8');
+                        $days = ['Sunday' => 'Minggu', 'Monday' => 'Senin', 'Tuesday' => 'Selasa', 'Wednesday' => 'Rabu', 'Thursday' => 'Kamis', 'Friday' => 'Jumat', 'Saturday' => 'Sabtu'];
+                        $months = ['January' => 'Januari', 'February' => 'Februari', 'March' => 'Maret', 'April' => 'April', 'May' => 'Mei', 'June' => 'Juni', 'July' => 'Juli', 'August' => 'Agustus', 'September' => 'September', 'October' => 'Oktober', 'November' => 'November', 'December' => 'Desember'];
+                        $dayName = $days[now()->format('l')];
+                        $monthName = $months[now()->format('F')];
+                    ?>
+                    {{ $dayName }}, {{ now()->format('d ') . $monthName . now()->format(' Y') }}
+                </small>
             </div>
         </div>
     </div>
@@ -166,6 +175,15 @@
                     <h6 class="m-0 font-weight-bold">
                         <i class="bi bi-bar-chart-fill me-2"></i>Grafik Kehadiran Mingguan
                     </h6>
+                    <small class="text-white-50">
+                        <?php
+                            $startDate = now()->subDays(6);
+                            $endDate = now();
+                            echo $days[$startDate->format('l')] . ', ' . $startDate->format('d ') . $months[$startDate->format('F')] . 
+                                 ' - ' . 
+                                 $days[$endDate->format('l')] . ', ' . $endDate->format('d ') . $months[$endDate->format('F')];
+                        ?>
+                    </small>
                 </div>
                 <div class="card-body">
                     <div style="position: relative; height: 350px;">
