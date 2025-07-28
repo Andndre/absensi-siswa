@@ -263,6 +263,13 @@
                     <div class="nav-section-title">Sistem</div>
                     <ul class="nav flex-column">
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.whatsapp.*') ? 'active' : '' }}" 
+                               href="{{ route('admin.whatsapp.index') }}">
+                                <i class="bi bi-whatsapp"></i>
+                                WhatsApp Notifikasi
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" 
                                href="#" onclick="alert('Fitur sedang dalam pengembangan')">
                                 <i class="bi bi-person-gear"></i>
@@ -271,7 +278,7 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}" 
-                               href="#" onclick="alert('Fitur sedang dalam pengembangan')">
+                               href="{{ route('admin.settings.index') }}">
                                 <i class="bi bi-gear-fill"></i>
                                 Pengaturan
                             </a>

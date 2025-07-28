@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DailyQrCode;
 use App\Models\Attendance;
+use App\Events\AttendanceRecorded;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -158,6 +159,9 @@ class DashboardController extends Controller
             'scan_method' => 'qr_code',
             'notes' => 'Absensi via QR Code scan'
         ]);
+
+        // Trigger event untuk mengirim notifikasi WhatsApp
+        event(new AttendanceRecorded($attendance));
 
         return response()->json([
             'success' => true,

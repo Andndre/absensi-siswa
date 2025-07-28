@@ -162,11 +162,11 @@
                                     <div class="row g-3">
                                         <div class="col-6">
                                             <label for="valid_from" class="form-label">Berlaku Dari</label>
-                                            <input type="time" class="form-control" id="valid_from" name="valid_from" value="06:00">
+                                            <input type="time" class="form-control" id="valid_from" name="valid_from" value="{{ $defaultStartTime }}">
                                         </div>
                                         <div class="col-6">
                                             <label for="valid_until" class="form-label">Berlaku Sampai</label>
-                                            <input type="time" class="form-control" id="valid_until" name="valid_until" value="08:00">
+                                            <input type="time" class="form-control" id="valid_until" name="valid_until" value="{{ $defaultEndTime }}">
                                         </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary btn-lg mt-3">

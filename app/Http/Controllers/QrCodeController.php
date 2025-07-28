@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\DailyQrCode;
 use App\Models\Attendance;
 use App\Models\Student;
+use App\Models\Setting;
+use App\Events\AttendanceRecorded;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +27,10 @@ class QrCodeController extends Controller
         $today = Carbon::today();
         $qrCode = DailyQrCode::forDate($today)->active()->first();
         
+        // Get default times from settings
+        $defaultStartTime = Setting::get('attendance.start_time', '06:00');
+        $defaultEndTime = Setting::get('attendance.end_time', '08:00');
+        
         // Statistics for today's QR usage
         $stats = [];
         if ($qrCode) {
@@ -36,7 +42,7 @@ class QrCodeController extends Controller
             ];
         }
         
-        return view('qr-code.today', compact('qrCode', 'stats', 'today'));
+        return view('qr-code.today', compact('qrCode', 'stats', 'today', 'defaultStartTime', 'defaultEndTime'));
     }
     
     /**
@@ -147,6 +153,9 @@ class QrCodeController extends Controller
             'scan_method' => 'qr_code',
             'notes' => 'Absen via QR Code scan'
         ]);
+        
+        // Trigger event untuk mengirim notifikasi WhatsApp
+        event(new AttendanceRecorded($attendance));
         
         return response()->json([
             'success' => true,

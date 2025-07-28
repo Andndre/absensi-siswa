@@ -20,6 +20,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | School Name
+    |--------------------------------------------------------------------------
+    |
+    | This value is the name of your school that will be used in notifications
+    | and other school-related communications.
+    |
+    */
+
+    'school_name' => env('SCHOOL_NAME', 'SMK Negeri 1'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
