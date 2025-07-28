@@ -65,7 +65,7 @@
                 <!-- WhatsApp Settings -->
                 <div class="tab-pane fade show active" id="whatsapp" role="tabpanel">
                     <div class="row">
-                        <div class="col-lg-8">
+                        <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
                                     <h5 class="card-title mb-0">
@@ -115,38 +115,6 @@
 
                                         <button type="submit" class="btn btn-primary">
                                             <i class="fas fa-save me-2"></i>Simpan Pengaturan
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-4">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">
-                                        <i class="fas fa-paper-plane me-2"></i>
-                                        Test WhatsApp
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <form action="{{ route('admin.settings.test-whatsapp') }}" method="POST">
-                                        @csrf
-                                        
-                                        <div class="mb-3">
-                                            <label for="test_phone" class="form-label">Nomor HP</label>
-                                            <input type="text" class="form-control" id="test_phone" name="phone" 
-                                                   placeholder="08123456789" required>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="test_message" class="form-label">Pesan</label>
-                                            <textarea class="form-control" id="test_message" name="message" rows="3" 
-                                                      placeholder="Pesan test..." required></textarea>
-                                        </div>
-
-                                        <button type="submit" class="btn btn-success btn-sm">
-                                            <i class="fab fa-whatsapp me-2"></i>Kirim Test
                                         </button>
                                     </form>
                                 </div>
