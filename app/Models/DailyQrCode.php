@@ -107,7 +107,7 @@ class DailyQrCode extends Model
     public function canStillScan()
     {
         $currentTime = Carbon::now()->format('H:i:s');
-        $markAlphaAt = config('attendance.mark_alpha_at', '23:00:00');
+        $markAlphaAt = config('attendance.mark_alpha_at', '23:59:59');
         
         // Debug logging
         Log::info('canStillScan Debug', [

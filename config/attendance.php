@@ -20,7 +20,7 @@ return [
     'end_time' => '08:30:00',
     
     // Jam berapa sistem menandai siswa yang tidak absen sebagai alpha
-    'mark_alpha_at' => '23:00:00',
+    'mark_alpha_at' => '23:59:59',
     
     // Hari kerja (1 = Senin, 7 = Minggu)
     'working_days' => [1, 2, 3, 4, 5, 6], // Senin - Sabtu
