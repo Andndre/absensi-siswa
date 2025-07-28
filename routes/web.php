@@ -41,6 +41,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // Attendance Routes
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::get('/attendance/report', [AttendanceController::class, 'report'])->name('attendance.report');
+    Route::put('/attendance/{attendance}', [AttendanceController::class, 'update'])->name('attendance.update');
     
     // QR Code Management Routes
     Route::prefix('qr-code')->name('qr-code.')->group(function () {

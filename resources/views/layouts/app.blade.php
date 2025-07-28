@@ -272,13 +272,13 @@
                                 WhatsApp Notifikasi
                             </a>
                         </li>
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" 
                                href="#" onclick="alert('Fitur sedang dalam pengembangan')">
                                 <i class="bi bi-person-gear"></i>
                                 Manajemen Admin
                             </a>
-                        </li>
+                        </li> --}}
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}" 
                                href="{{ route('admin.settings.index') }}">

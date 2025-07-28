@@ -63,14 +63,17 @@
                                 <input type="text" class="form-control" id="search" name="search" 
                                        placeholder="Nama atau NIS..." value="{{ request('search') }}">
                             </div>
+                            @php
+                                $defaultPerPage = \App\Models\Setting::get('system.records_per_page', 10);
+                            @endphp
                             <div class="col-lg-2 col-md-6 mb-3">
                                 <label for="per_page" class="form-label">Per Halaman</label>
                                 <select class="form-select" id="per_page" name="per_page">
-                                    <option value="10" {{ request('per_page') == '10' ? 'selected' : '' }}>10</option>
-                                    <option value="15" {{ request('per_page', '15') == '15' ? 'selected' : '' }}>15</option>
-                                    <option value="25" {{ request('per_page') == '25' ? 'selected' : '' }}>25</option>
-                                    <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50</option>
-                                    <option value="100" {{ request('per_page') == '100' ? 'selected' : '' }}>100</option>
+                                    <option value="10" {{ request('per_page', $defaultPerPage) == '10' ? 'selected' : '' }}>10</option>
+                                    <option value="15" {{ request('per_page', $defaultPerPage) == '15' ? 'selected' : '' }}>15</option>
+                                    <option value="25" {{ request('per_page', $defaultPerPage) == '25' ? 'selected' : '' }}>25</option>
+                                    <option value="50" {{ request('per_page', $defaultPerPage) == '50' ? 'selected' : '' }}>50</option>
+                                    <option value="100" {{ request('per_page', $defaultPerPage) == '100' ? 'selected' : '' }}>100</option>
                                 </select>
                             </div>
                             <div class="col-lg-1 col-md-6 mb-3">
@@ -250,35 +253,27 @@
                                             <strong>{{ $attendance->attendance_time->format('H:i:s') }}</strong>
                                         </td>
                                         <td>
-                                            @switch($attendance->status)
-                                                @case('hadir')
-                                                    <span class="badge bg-success">
-                                                        <i class="bi bi-check-circle me-1"></i>Hadir
-                                                    </span>
-                                                    @break
-                                                @case('terlambat')
-                                                    <span class="badge bg-warning">
-                                                        <i class="bi bi-clock me-1"></i>Terlambat
-                                                    </span>
-                                                    @break
-                                                @case('izin')
-                                                    <span class="badge bg-info">
-                                                        <i class="bi bi-person-exclamation me-1"></i>Izin
-                                                    </span>
-                                                    @break
-                                                @case('sakit')
-                                                    <span class="badge bg-secondary">
-                                                        <i class="bi bi-heart-pulse me-1"></i>Sakit
-                                                    </span>
-                                                    @break
-                                                @case('alpha')
-                                                    <span class="badge bg-danger">
-                                                        <i class="bi bi-x-circle me-1"></i>Alpha
-                                                    </span>
-                                                    @break
-                                                @default
-                                                    <span class="badge bg-secondary">{{ $attendance->status }}</span>
-                                            @endswitch
+                                            <form action="{{ route('admin.attendance.update', $attendance) }}" method="POST" class="d-inline status-form">
+                                                @csrf
+                                                @method('PUT')
+                                                <select class="form-select form-select-sm status-select" name="status" style="width: 130px;">
+                                                    <option value="hadir" {{ $attendance->status == 'hadir' ? 'selected' : '' }} class="text-success">
+                                                        🟢 Hadir
+                                                    </option>
+                                                    <option value="terlambat" {{ $attendance->status == 'terlambat' ? 'selected' : '' }} class="text-warning">
+                                                        🟡 Terlambat
+                                                    </option>
+                                                    <option value="izin" {{ $attendance->status == 'izin' ? 'selected' : '' }} class="text-info">
+                                                        🔵 Izin
+                                                    </option>
+                                                    <option value="sakit" {{ $attendance->status == 'sakit' ? 'selected' : '' }} class="text-secondary">
+                                                        ⚪ Sakit
+                                                    </option>
+                                                    <option value="alpha" {{ $attendance->status == 'alpha' ? 'selected' : '' }} class="text-danger">
+                                                        🔴 Alpha
+                                                    </option>
+                                                </select>
+                                            </form>
                                         </td>
                                         <td>
                                             <small class="text-muted">
@@ -297,18 +292,18 @@
                                 <small class="text-muted">
                                     Menampilkan {{ $attendances->firstItem() }} sampai {{ $attendances->lastItem() }} 
                                     dari {{ $attendances->total() }} data
-                                    ({{ request('per_page', 15) }} per halaman)
+                                    ({{ request('per_page', $defaultPerPage) }} per halaman)
                                 </small>
                             </div>
                             <div class="col-lg-4 col-md-12">
                                 <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-end">
                                     <div class="mb-2 mb-lg-0 me-lg-3">
                                         <select class="form-select form-select-sm" onchange="changePerPage(this.value)" style="min-width: 140px;">
-                                            <option value="10" {{ request('per_page') == '10' ? 'selected' : '' }}>10 per halaman</option>
-                                            <option value="15" {{ request('per_page', '15') == '15' ? 'selected' : '' }}>15 per halaman</option>
-                                            <option value="25" {{ request('per_page') == '25' ? 'selected' : '' }}>25 per halaman</option>
-                                            <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50 per halaman</option>
-                                            <option value="100" {{ request('per_page') == '100' ? 'selected' : '' }}>100 per halaman</option>
+                                            <option value="10" {{ request('per_page', $defaultPerPage) == '10' ? 'selected' : '' }}>10 per halaman</option>
+                                            <option value="15" {{ request('per_page', $defaultPerPage) == '15' ? 'selected' : '' }}>15 per halaman</option>
+                                            <option value="25" {{ request('per_page', $defaultPerPage) == '25' ? 'selected' : '' }}>25 per halaman</option>
+                                            <option value="50" {{ request('per_page', $defaultPerPage) == '50' ? 'selected' : '' }}>50 per halaman</option>
+                                            <option value="100" {{ request('per_page', $defaultPerPage) == '100' ? 'selected' : '' }}>100 per halaman</option>
                                         </select>
                                     </div>
                                     <div>
@@ -331,6 +326,37 @@
 </div>
 
 <style>
+/* Status select styling */
+.status-select {
+    padding: 4px 8px;
+    font-size: 0.875rem;
+    border-radius: 4px;
+}
+
+.status-select option {
+    padding: 4px 8px;
+}
+
+.status-select option[value="hadir"] {
+    color: #198754;
+}
+
+.status-select option[value="terlambat"] {
+    color: #ffc107;
+}
+
+.status-select option[value="izin"] {
+    color: #0dcaf0;
+}
+
+.status-select option[value="sakit"] {
+    color: #6c757d;
+}
+
+.status-select option[value="alpha"] {
+    color: #dc3545;
+}
+
 .border-left-primary {
     border-left: 4px solid var(--primary-color) !important;
 }
@@ -420,6 +446,23 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+});
+// Add event listeners to all status selects
+document.querySelectorAll('.status-select').forEach(select => {
+    select.addEventListener('change', function() {
+        const form = this.closest('form');
+        if (form) {
+            const oldStatus = this.options[this.selectedIndex].text;
+            if (confirm('Ubah status menjadi ' + oldStatus + '?')) {
+                form.submit();
+            } else {
+                // Reset to previous value if cancelled
+                this.value = this.getAttribute('data-original-value');
+            }
+        }
+    });
+    // Store original value for cancel action
+    select.setAttribute('data-original-value', select.value);
 });
 </script>
 @endsection

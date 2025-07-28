@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Attendance;
 use App\Models\Student;
 use App\Models\SchoolClass;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -50,8 +51,9 @@ class AttendanceController extends Controller
         }
         
         // Pagination per page
-        $perPage = $request->filled('per_page') ? (int)$request->per_page : 15;
-        $perPage = in_array($perPage, [10, 15, 25, 50, 100]) ? $perPage : 15;
+        $defaultPerPage = Setting::get('system.records_per_page', 10);
+        $perPage = $request->filled('per_page') ? (int)$request->per_page : $defaultPerPage;
+        $perPage = in_array($perPage, [10, 15, 25, 50, 100]) ? $perPage : $defaultPerPage;
         
         $attendances = $query->orderBy('attendance_time', 'desc')->paginate($perPage);
         $classes = SchoolClass::orderBy('name')->get();
@@ -149,5 +151,26 @@ class AttendanceController extends Controller
         ];
         
         return $stats;
+    }
+
+    /**
+     * Update the attendance status.
+     */
+    public function update(Request $request, Attendance $attendance)
+    {
+        $request->validate([
+            'status' => 'required|in:hadir,terlambat,izin,sakit,alpha',
+        ]);
+
+        $oldStatus = $attendance->status;
+        $attendance->update([
+            'status' => $request->status
+        ]);
+
+        // Refresh stats cache if needed
+        $date = $attendance->attendance_time->format('Y-m-d');
+        $this->getAttendanceStats($date, $attendance->student->school_class_id);
+
+        return back()->with('success', 'Status absensi berhasil diubah dari ' . ucfirst($oldStatus) . ' menjadi ' . ucfirst($request->status));
     }
 }

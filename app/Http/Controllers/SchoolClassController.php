@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SchoolClass;
 use App\Models\Student;
+use App\Models\Setting;
 
 class SchoolClassController extends Controller
 {
@@ -25,7 +26,8 @@ class SchoolClassController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
         
-        $classes = $query->orderBy('name')->paginate(15);
+        $perPage = Setting::get('system.records_per_page', 10);
+        $classes = $query->orderBy('name')->paginate($perPage);
         
         return view('classes.index', compact('classes'));
     }

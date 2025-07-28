@@ -64,12 +64,15 @@
                             </div>
                             <div class="col-lg-2 col-md-6 mb-3">
                                 <label for="per_page" class="form-label">Per Halaman</label>
+                                @php
+                                    $defaultPerPage = \App\Models\Setting::get('system.records_per_page', 10);
+                                @endphp
                                 <select class="form-select" id="per_page" name="per_page">
-                                    <option value="10" {{ request('per_page') == '10' ? 'selected' : '' }}>10</option>
-                                    <option value="15" {{ request('per_page', '15') == '15' ? 'selected' : '' }}>15</option>
-                                    <option value="25" {{ request('per_page') == '25' ? 'selected' : '' }}>25</option>
-                                    <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50</option>
-                                    <option value="100" {{ request('per_page') == '100' ? 'selected' : '' }}>100</option>
+                                    <option value="10" {{ request('per_page', $defaultPerPage) == '10' ? 'selected' : '' }}>10</option>
+                                    <option value="15" {{ request('per_page', $defaultPerPage) == '15' ? 'selected' : '' }}>15</option>
+                                    <option value="25" {{ request('per_page', $defaultPerPage) == '25' ? 'selected' : '' }}>25</option>
+                                    <option value="50" {{ request('per_page', $defaultPerPage) == '50' ? 'selected' : '' }}>50</option>
+                                    <option value="100" {{ request('per_page', $defaultPerPage) == '100' ? 'selected' : '' }}>100</option>
                                 </select>
                             </div>
                             <div class="col-lg-3 col-md-6 mb-3">
@@ -164,18 +167,18 @@
                                 <small class="text-muted">
                                     Menampilkan {{ $students->firstItem() }} sampai {{ $students->lastItem() }} 
                                     dari {{ $students->total() }} data
-                                    ({{ request('per_page', 15) }} per halaman)
+                                    ({{ request('per_page', $defaultPerPage) }} per halaman)
                                 </small>
                             </div>
                             <div class="col-lg-4 col-md-12">
                                 <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-end">
                                     <div class="mb-2 mb-lg-0 me-lg-3">
                                         <select class="form-select form-select-sm" onchange="changePerPage(this.value)" style="min-width: 140px;">
-                                            <option value="10" {{ request('per_page') == '10' ? 'selected' : '' }}>10 per halaman</option>
-                                            <option value="15" {{ request('per_page', '15') == '15' ? 'selected' : '' }}>15 per halaman</option>
-                                            <option value="25" {{ request('per_page') == '25' ? 'selected' : '' }}>25 per halaman</option>
-                                            <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50 per halaman</option>
-                                            <option value="100" {{ request('per_page') == '100' ? 'selected' : '' }}>100 per halaman</option>
+                                            <option value="10" {{ request('per_page', $defaultPerPage) == '10' ? 'selected' : '' }}>10 per halaman</option>
+                                            <option value="15" {{ request('per_page', $defaultPerPage) == '15' ? 'selected' : '' }}>15 per halaman</option>
+                                            <option value="25" {{ request('per_page', $defaultPerPage) == '25' ? 'selected' : '' }}>25 per halaman</option>
+                                            <option value="50" {{ request('per_page', $defaultPerPage) == '50' ? 'selected' : '' }}>50 per halaman</option>
+                                            <option value="100" {{ request('per_page', $defaultPerPage) == '100' ? 'selected' : '' }}>100 per halaman</option>
                                         </select>
                                     </div>
                                     <div>
