@@ -25,15 +25,17 @@ class AuthController extends Controller
     {
         $request->validate([
             'username' => 'required|string',
-            'password' => 'required|string',
-            'remember' => 'boolean'
+            'password' => 'required|string'
         ]);
+
+        // Cast remember to boolean
+        $remember = (bool) $request->remember;
 
         // Coba login sebagai admin
         if (Auth::attempt([
             'email' => $request->username,
             'password' => $request->password
-        ], $request->remember)) {
+        ], $remember)) {
             return redirect()->intended(route('admin.dashboard'));
         }
 
@@ -41,7 +43,7 @@ class AuthController extends Controller
         if (Auth::guard('student')->attempt([
             'nis' => $request->username,
             'password' => $request->password
-        ], $request->remember)) {
+        ], $remember)) {
             return redirect()->intended(route('student.dashboard'));
         }
 
