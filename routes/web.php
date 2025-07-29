@@ -92,8 +92,13 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 Route::prefix('student')->name('student.')->group(function () {
     // Protected Student Routes
     Route::middleware('student.auth')->group(function () {
+        // Dashboard
         Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
         Route::post('/scan-qr', [StudentDashboardController::class, 'scanQr'])->name('scan-qr');
+        
+        // Change Password
+        Route::get('/change-password', [App\Http\Controllers\Student\AuthController::class, 'showChangePasswordForm'])->name('change-password');
+        Route::post('/change-password', [App\Http\Controllers\Student\AuthController::class, 'changePassword'])->name('change-password.submit');
         
         // Debug route
         Route::get('/debug-qr', function() {
@@ -112,9 +117,5 @@ Route::prefix('student')->name('student.')->group(function () {
                 ] : null
             ]);
         })->name('debug-qr');
-        
-        // Change Password Routes
-        Route::get('/change-password', [AuthController::class, 'showChangePasswordForm'])->name('change-password');
-        Route::post('/change-password', [AuthController::class, 'changePassword'])->name('change-password.submit');
     });
 });
