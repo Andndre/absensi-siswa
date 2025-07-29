@@ -88,53 +88,44 @@ class WhatsAppService
         $status = $attendanceData['status'];
         $time = $attendanceData['time'];
         $date = $attendanceData['date'];
-        $schoolName = config('app.school_name', 'SMK Negeri 1');
+
+        // Format status dengan huruf besar di awal dan emoji
+        $statusFormats = [
+            'hadir' => 'Hadir ✅',
+            'terlambat' => 'Terlambat ⏰',
+            'izin' => 'Izin 📝',
+            'sakit' => 'Sakit 🏥',
+            'alpha' => 'Alpha ❌'
+        ];
+
+        $formattedStatus = $statusFormats[$status] ?? ucfirst($status);
         
-        $statusText = [
-            'hadir' => '✅ HADIR',
-            'terlambat' => '⏰ TERLAMBAT',
-            'izin' => '📝 IZIN',
-            'sakit' => '🏥 SAKIT',
-            'alpha' => '❌ ALPHA'
-        ];
-
-        $emoji = [
-            'hadir' => '😊',
-            'terlambat' => '😅',
-            'izin' => '📋',
-            'sakit' => '🤒',
-            'alpha' => '😟'
-        ];
-
-        $message = "*NOTIFIKASI ABSENSI SISWA* {$emoji[$status]}\n\n";
-        $message .= "📚 *{$schoolName}*\n";
-        $message .= "👤 *Nama:* {$studentName}\n";
-        $message .= "📅 *Tanggal:* {$date}\n";
-        $message .= "🕐 *Waktu:* {$time}\n";
-        $message .= "📋 *Status:* {$statusText[$status]}\n\n";
-
-        // Pesan khusus berdasarkan status
-        switch ($status) {
-            case 'hadir':
-                $message .= "Anak Anda telah hadir tepat waktu di sekolah. 👍";
-                break;
-            case 'terlambat':
-                $message .= "Anak Anda terlambat masuk sekolah. Mohon diingatkan untuk berangkat lebih awal. 🙏";
-                break;
-            case 'izin':
-                $message .= "Anak Anda tidak masuk sekolah dengan keterangan izin. 📝";
-                break;
-            case 'sakit':
-                $message .= "Anak Anda tidak masuk sekolah karena sakit. Semoga lekas sembuh. 🤲";
-                break;
-            case 'alpha':
-                $message .= "Anak Anda tidak hadir tanpa keterangan. Mohon konfirmasi kehadiran. ⚠️";
-                break;
+        try {
+            $messageFormat = Setting::get('whatsapp.notification_format');
+            $schoolName = Setting::get('school.name', 'SMK Negeri 1');
+        } catch (\Exception $e) {
+            Log::warning('Failed to get message format from settings, using default', [
+                'error' => $e->getMessage()
+            ]);
+            // Fallback to default format if settings are not available
+            $messageFormat = "Assalamu'alaikum {parent_name},\n\nKami informasikan bahwa putra/putri Anda:\n\nNama: {student_name}\nKelas: {class_name}\nStatus: {status}\nWaktu: {time}\nTanggal: {date}\n\nTerima kasih atas perhatiannya.\n\n{school_name}";
+            $schoolName = config('app.school_name', 'SMK Negeri 1');
         }
 
-        $message .= "\n\n_Pesan otomatis dari sistem absensi {$schoolName}_";
-        
-        return $message;
+        // Replace placeholders with actual values
+        $replacements = [
+            '{student_name}' => $studentName,
+            '{status}' => $formattedStatus,
+            '{time}' => $time,
+            '{date}' => $date,
+            '{school_name}' => $schoolName
+        ];
+
+        return str_replace(
+            array_keys($replacements),
+            array_values($replacements),
+            $messageFormat
+        );
     }
 
     /**

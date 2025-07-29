@@ -1,11 +1,136 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Absensi Siswa
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi web untuk mengelola absensi siswa dengan QR Code dan notifikasi WhatsApp otomatis.
+
+## Fitur Utama
+
+- ✅ Absensi dengan QR Code
+- 📱 Notifikasi WhatsApp otomatis ke orang tua
+- 👥 Management data siswa dan kelas
+- 📊 Laporan absensi detail
+- 🔔 Broadcast pesan ke orang tua
+- ⚙️ Pengaturan sistem yang fleksibel
+
+## Teknologi
+
+- Laravel 10
+- Bootstrap 5
+- MySQL/MariaDB
+- API Fonnte WhatsApp
+
+## Persyaratan Sistem
+
+- PHP >= 8.1
+- Composer
+- MySQL/MariaDB
+- Node.js & NPM
+- Akun Fonnte WhatsApp API
+
+## Instalasi
+
+1. Clone repositori ini
+```bash
+git clone https://github.com/yourusername/absensi-siswa.git
+cd absensi-siswa
+```
+
+2. Install dependensi PHP
+```bash
+composer install
+```
+
+3. Install dependensi Node.js
+```bash
+npm install
+```
+
+4. Salin file .env
+```bash
+cp .env.example .env
+```
+
+5. Generate key aplikasi
+```bash
+php artisan key:generate
+```
+
+6. Konfigurasi database di file .env
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=absensi_siswa
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+7. Jalankan migrasi database
+```bash
+php artisan migrate --seed
+```
+
+8. Build assets
+```bash
+npm run dev
+```
+
+9. Jalankan server
+```bash
+php artisan serve
+```
+
+## Konfigurasi WhatsApp
+
+1. Daftar akun di [Fonnte](https://fonnte.com)
+2. Login ke dashboard Fonnte
+3. Klik menu "Device" dan hubungkan WhatsApp dengan scan QR
+4. Klik tombol "Token" pada device yang sudah dibuat untuk untuk menyalin token
+5. Masuk ke menu Pengaturan di aplikasi
+6. Masukkan token Fonnte di tab WhatsApp
+
+## Cron Jobs
+
+Aplikasi menggunakan cron jobs untuk:
+1. Mengirim notifikasi WhatsApp
+2. Menandai siswa yang tidak hadir sebagai alpha
+
+Tambahkan crontab berikut di server:
+```bash
+* * * * * cd /path/to/project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+## Akun Default
+
+### Admin
+- Email: admin@admin.com
+- Password: password
+
+### Siswa
+- NIS: [NIS siswa]
+- Password: [sama dengan NIS]
+
+## Penggunaan
+
+1. Admin dapat:
+   - Mengelola data siswa dan kelas
+   - Generate QR Code absensi
+   - Melihat laporan absensi
+   - Mengirim pesan broadcast
+   - Mengatur sistem
+
+2. Siswa dapat:
+   - Login dengan NIS
+   - Scan QR Code untuk absen
+   - Melihat riwayat absensi
+   - Mengubah password
+
+## Lisensi
+
+MIT License
+
+## Kontribusi
+
+Silakan buat pull request untuk kontribusi.
 
 ## About Laravel
 

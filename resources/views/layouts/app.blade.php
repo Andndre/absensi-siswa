@@ -204,7 +204,7 @@
         <nav class="sidebar" id="sidebar">
             <!-- Sidebar Header -->
             <div class="sidebar-header">
-                <a href="{{ route('dashboard') }}" class="sidebar-brand">
+                <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
                     <i class="bi bi-calendar-check-fill me-2"></i>
                     ABSENSI SEKOLAH
                 </a>
@@ -217,8 +217,8 @@
                     <div class="nav-section-title">Navigasi Utama</div>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('dashboard') || request()->routeIs('home') ? 'active' : '' }}" 
-                               href="{{ route('dashboard') }}">
+                            <a class="nav-link {{ request()->routeIs('admin.dashboard') || request()->routeIs('home') ? 'active' : '' }}" 
+                               href="{{ route('admin.dashboard') }}">
                                 <i class="bi bi-grid-fill"></i>
                                 Dashboard
                             </a>
@@ -330,7 +330,7 @@
                         <ul class="navbar-nav me-auto">
                             @guest
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('dashboard') }}">
+                                    <a class="nav-link" href="{{ route('admin.dashboard') }}">
                                         <i class="bi bi-speedometer2 me-1"></i>Dashboard
                                     </a>
                                 </li>
@@ -360,7 +360,7 @@
                                     </a>
 
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item" href="{{ route('dashboard') }}">
+                                        <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
                                             <i class="bi bi-speedometer2 me-2"></i>Dashboard
                                         </a>
                                         <div class="dropdown-divider"></div>

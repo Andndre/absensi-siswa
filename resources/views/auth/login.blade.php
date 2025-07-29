@@ -1,135 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Admin - Sistem Absensi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #34568B;
-            --primary-light: #0d6efd;
-            --bg-light: #f8f9fa;
-        }
+@extends('layouts.main')
 
-        body {
-            background-color: var(--bg-light);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 1rem 0;
-        }
+@section('title', 'Login')
 
-        .login-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            width: 100%;
-            max-width: 400px;
-            border: 1px solid #e9ecef;
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .login-header i {
-            font-size: 2.5rem;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-        }
-
-        .login-header h3 {
-            color: #212529;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-            padding: 0.75rem;
-            font-weight: 500;
-            border-radius: 6px;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-light);
-            border-color: var(--primary-light);
-        }
-
-        .form-control {
-            padding: 0.75rem;
-            border-radius: 6px;
-            border: 1px solid #ced4da;
-            font-size: 0.95rem;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(52, 86, 139, 0.25);
-        }
-
-        .input-group-text {
-            background: #f8f9fa;
-            border: 1px solid #ced4da;
-            border-right: none;
-            color: #6c757d;
-        }
-
-        .input-group .form-control {
-            border-left: none;
-        }
-
-        .input-group .form-control:focus {
-            border-left: none;
-        }
-
-        .alert {
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 576px) {
-            body {
-                padding: 0.5rem;
-            }
-
-            .login-card {
-                padding: 1.5rem;
-                margin: 0.5rem;
-            }
-
-            .login-header i {
-                font-size: 2rem;
-            }
-
-            .login-header h3 {
-                font-size: 1.4rem;
-            }
-
-            .form-control {
-                padding: 0.65rem;
-            }
-
-            .btn-primary {
-                padding: 0.65rem;
-            }
-        }
-    </style>
-</head>
-<body>
+@section('content')
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12 col-sm-10 col-md-8 col-lg-6">
                 <div class="login-card">
                     <div class="login-header">
-                        <i class="fas fa-user-shield"></i>
-                        <h3 class="mb-0">Login Admin</h3>
-                        <p class="text-muted mb-0">Masuk untuk mengelola sistem</p>
+                        <i class="fas fa-user-circle"></i>
+                        <h3 class="mb-0">Login</h3>
+                        <p class="text-muted mb-0">Masuk ke Sistem Absensi</p>
                     </div>
 
                     @if ($errors->any())
@@ -142,22 +23,23 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('login') }}">
+                    <form method="POST" action="{{ route('login.submit') }}">
                         @csrf
                         
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
+                            <label for="username" class="form-label">Username</label>
                             <div class="input-group">
                                 <span class="input-group-text">
-                                    <i class="fas fa-envelope"></i>
+                                    <i class="fas fa-user"></i>
                                 </span>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                                       id="email" name="email" value="{{ old('email') }}" 
-                                       placeholder="Masukkan email" required autofocus>
+                                <input type="text" class="form-control @error('username') is-invalid @enderror" 
+                                       id="username" name="username" value="{{ old('username') }}" 
+                                       placeholder="Masukkan username Anda" required autofocus>
                             </div>
-                            @error('email')
+                            @error('username')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
+                            <div class="form-text">Gunakan email untuk admin atau NIS untuk siswa</div>
                         </div>
 
                         <div class="mb-4">
@@ -198,7 +80,4 @@
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+@endsection
