@@ -5,7 +5,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SchoolClassController;
-use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\WhatsAppController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\AuthController;
@@ -40,10 +39,6 @@ Route::get('/home', function() {
     }
     return redirect()->route('login');
 })->name('home');
-
-// Public QR Code Scanning Routes (No Auth Required)
-Route::get('/scan/{token}', [QrCodeController::class, 'scanQr'])->name('attendance.scan');
-Route::post('/scan/{token}', [QrCodeController::class, 'scanQr'])->name('attendance.scan.process');
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {

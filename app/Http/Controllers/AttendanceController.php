@@ -242,6 +242,9 @@ class AttendanceController extends Controller
                 'notes' => $request->notes
             ]);
             
+            // Trigger event untuk notifikasi WhatsApp
+            event(new \App\Events\AttendanceRecorded($attendance));
+            
             Log::info('Absensi berhasil dicatat untuk siswa: ' . $student->name);
             
             return response()->json([
