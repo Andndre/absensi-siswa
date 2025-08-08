@@ -47,6 +47,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     
     // Attendance Routes
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/attendance/report', [AttendanceController::class, 'report'])->name('attendance.report');
     Route::put('/attendance/{attendance}', [AttendanceController::class, 'update'])->name('attendance.update');
     

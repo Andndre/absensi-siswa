@@ -57,14 +57,60 @@ class AttendanceController extends Controller
         
         $attendances = $query->orderBy('attendance_time', 'desc')->paginate($perPage);
         $classes = SchoolClass::orderBy('name')->get();
+        $students = Student::with('schoolClass')->orderBy('name')->get();
         
         // Statistik untuk hari yang dipilih
         $selectedDate = $request->filled('date') ? $request->date : Carbon::today()->format('Y-m-d');
         $stats = $this->getAttendanceStats($selectedDate, $request->class_id);
         
-        return view('attendance.index', compact('attendances', 'classes', 'stats', 'selectedDate'));
+        return view('attendance.index', compact('attendances', 'classes', 'students', 'stats', 'selectedDate'));
     }
     
+    public function store(Request $request)
+    {
+        $request->validate([
+            'student_id' => 'required|exists:students,id',
+            'attendance_date' => 'required|date',
+            'status' => 'required|in:hadir,terlambat,izin,sakit,alpha',
+            'notes' => 'nullable|string|max:255'
+        ], [
+            'student_id.required' => 'Siswa harus dipilih.',
+            'student_id.exists' => 'Siswa yang dipilih tidak valid.',
+            'attendance_date.required' => 'Tanggal absensi harus diisi.',
+            'attendance_date.date' => 'Format tanggal tidak valid.',
+            'status.required' => 'Status absensi harus dipilih.',
+            'status.in' => 'Status absensi tidak valid.',
+            'notes.max' => 'Keterangan maksimal 255 karakter.'
+        ]);
+
+        // Gunakan tanggal yang dipilih dengan waktu saat ini
+        $attendanceDateTime = Carbon::createFromFormat('Y-m-d', $request->attendance_date)
+            ->setTime(Carbon::now()->hour, Carbon::now()->minute, Carbon::now()->second);
+
+        // Cek apakah sudah ada absensi untuk siswa pada tanggal yang sama
+        $existingAttendance = Attendance::where('student_id', $request->student_id)
+            ->whereDate('attendance_time', $request->attendance_date)
+            ->first();
+
+        if ($existingAttendance) {
+            return redirect()->back()
+                ->with('error', 'Siswa sudah memiliki record absensi pada tanggal tersebut. Gunakan fitur edit jika ingin mengubah status.');
+        }
+
+        // Buat record absensi baru
+        Attendance::create([
+            'student_id' => $request->student_id,
+            'attendance_time' => $attendanceDateTime,
+            'status' => $request->status,
+            'notes' => $request->notes,
+            'scanned_by' => auth()->id(), // Mencatat siapa yang menambahkan (manual entry)
+            'scan_method' => 'manual' // Menandai bahwa ini adalah input manual
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Absensi berhasil ditambahkan secara manual.');
+    }
+
     public function report(Request $request)
     {
         $startDate = $request->filled('start_date') ? $request->start_date : Carbon::now()->startOfMonth()->format('Y-m-d');

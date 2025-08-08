@@ -18,6 +18,46 @@
         </div>
     </div>
 
+    <!-- Success/Error Messages -->
+    @if(session('success'))
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @if($errors->any())
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong>Terjadi kesalahan:</strong>
+                <ul class="mb-0 mt-2">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Filter Section -->
     <div class="row mb-4">
         <div class="col-12">
@@ -238,6 +278,94 @@
         </div>
     </div>
     @endif
+
+    <!-- Manual Attendance Form -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="bi bi-plus-circle me-2"></i>Tambah Absensi Manual
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ route('admin.attendance.store') }}">
+                        @csrf
+                        <div class="row">
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <label for="student_id" class="form-label">Pilih Siswa <span class="text-danger">*</span></label>
+                                <select class="form-select" id="student_id" name="student_id" required>
+                                    <option value="">-- Pilih Siswa --</option>
+                                    @php
+                                        $classesWithStudents = \App\Models\SchoolClass::with('students')->orderBy('name')->get();
+                                    @endphp
+                                    @foreach($classesWithStudents as $class)
+                                        @if($class->students->count() > 0)
+                                            <optgroup label="{{ $class->name }}">
+                                                @foreach($class->students->sortBy('name') as $student)
+                                                    <option value="{{ $student->id }}">
+                                                        {{ $student->name }} ({{ $student->nis }})
+                                                    </option>
+                                                @endforeach
+                                            </optgroup>
+                                        @endif
+                                    @endforeach
+                                    @php
+                                        $studentsWithoutClass = \App\Models\Student::whereNull('school_class_id')->orderBy('name')->get();
+                                    @endphp
+                                    @if($studentsWithoutClass->count() > 0)
+                                        <optgroup label="Tanpa Kelas">
+                                            @foreach($studentsWithoutClass as $student)
+                                                <option value="{{ $student->id }}">
+                                                    {{ $student->name }} ({{ $student->nis }})
+                                                </option>
+                                            @endforeach
+                                        </optgroup>
+                                    @endif
+                                </select>
+                            </div>
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <label for="manual_date" class="form-label">Tanggal <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="manual_date" name="attendance_date" 
+                                       value="{{ request('date', date('Y-m-d')) }}" required>
+                            </div>
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <label for="manual_status" class="form-label">Status <span class="text-danger">*</span></label>
+                                <select class="form-select" id="manual_status" name="status" required>
+                                    <option value="">-- Pilih Status --</option>
+                                    <option value="hadir">🟢 Hadir</option>
+                                    <option value="terlambat">🟡 Terlambat</option>
+                                    <option value="izin">🔵 Izin</option>
+                                    <option value="sakit">⚪ Sakit</option>
+                                    <option value="alpha">🔴 Alpha</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <label for="manual_notes" class="form-label">Keterangan</label>
+                                <input type="text" class="form-control" id="manual_notes" name="notes" 
+                                       placeholder="Keterangan (opsional)">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-plus-circle me-1"></i>Tambah Absensi
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Form ini untuk menambah data absensi secara manual. Waktu akan otomatis menggunakan waktu saat ini.
+                                </small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Data Table -->
     <div class="row">
@@ -770,7 +898,49 @@
     border-color: #adb5bd;
     color: #0d6efd;
 }
+
+/* Select2 Custom Styling */
+.select2-container .select2-selection--single {
+    height: 38px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    line-height: 34px;
+    padding-left: 12px;
+}
+
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
+    height: 34px;
+    right: 12px;
+}
+
+.select2-container--bootstrap-5.select2-container--focus .select2-selection {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.select2-dropdown {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.select2-search--dropdown .select2-search__field {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 8px 12px;
+}
 </style>
+
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+
+<!-- jQuery (required for Select2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
 function changePerPage(perPage) {
@@ -797,6 +967,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Initialize Select2 for student dropdown
+$(document).ready(function() {
+    $('#student_id').select2({
+        theme: 'bootstrap-5',
+        placeholder: '-- Pilih Siswa --',
+        allowClear: true,
+        width: '100%',
+        language: {
+            noResults: function() {
+                return "Tidak ada siswa yang ditemukan";
+            },
+            searching: function() {
+                return "Mencari...";
+            },
+            loadingMore: function() {
+                return "Memuat lebih banyak...";
+            }
+        }
+    });
+});
+
 // Add event listeners to all status selects
 document.querySelectorAll('.status-select').forEach(select => {
     select.addEventListener('change', function() {
