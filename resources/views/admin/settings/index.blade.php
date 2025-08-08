@@ -185,36 +185,6 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="app_name" class="form-label">Nama Aplikasi</label>
-                                            <input type="text" class="form-control" id="app_name" name="app_name" 
-                                                   value="{{ $settings['system']['app_name'] ?? 'Sistem Absensi' }}" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="timezone" class="form-label">Zona Waktu</label>
-                                            <select class="form-select" id="timezone" name="timezone" required>
-                                                <option value="Asia/Jakarta" {{ ($settings['system']['timezone'] ?? 'Asia/Jakarta') == 'Asia/Jakarta' ? 'selected' : '' }}>WIB (Asia/Jakarta)</option>
-                                                <option value="Asia/Makassar" {{ ($settings['system']['timezone'] ?? '') == 'Asia/Makassar' ? 'selected' : '' }}>WITA (Asia/Makassar)</option>
-                                                <option value="Asia/Jayapura" {{ ($settings['system']['timezone'] ?? '') == 'Asia/Jayapura' ? 'selected' : '' }}>WIT (Asia/Jayapura)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="date_format" class="form-label">Format Tanggal</label>
-                                            <select class="form-select" id="date_format" name="date_format" required>
-                                                <option value="d/m/Y" {{ ($settings['system']['date_format'] ?? 'd/m/Y') == 'd/m/Y' ? 'selected' : '' }}>DD/MM/YYYY</option>
-                                                <option value="d-m-Y" {{ ($settings['system']['date_format'] ?? '') == 'd-m-Y' ? 'selected' : '' }}>DD-MM-YYYY</option>
-                                                <option value="Y-m-d" {{ ($settings['system']['date_format'] ?? '') == 'Y-m-d' ? 'selected' : '' }}>YYYY-MM-DD</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
                                             <label for="records_per_page" class="form-label">Data per Halaman</label>
                                             <select class="form-select" id="records_per_page" name="records_per_page" required>
                                                 <option value="10" {{ ($settings['system']['records_per_page'] ?? 10) == 10 ? 'selected' : '' }}>10</option>
@@ -224,6 +194,27 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch mt-4">
+                                                <input class="form-check-input" type="checkbox" id="auto_mark_absent" name="auto_mark_absent" value="1"
+                                                       {{ ($settings['system']['auto_mark_absent'] ?? true) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="auto_mark_absent">
+                                                    <strong>Auto Mark Siswa Alpha</strong><br>
+                                                    <small class="text-muted">Otomatis menandai siswa yang tidak hadir sebagai alpha</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Keterangan Auto Mark:</strong>
+                                    <ul class="mb-0 mt-2">
+                                        <li>Jika diaktifkan, sistem akan otomatis menandai siswa yang tidak absen sebagai alpha</li>
+                                        <li>Proses akan berjalan otomatis setiap hari pada pukul 23:59</li>
+                                    </ul>
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">

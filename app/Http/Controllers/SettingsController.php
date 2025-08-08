@@ -63,16 +63,11 @@ class SettingsController extends Controller
     public function updateSystem(Request $request)
     {
         $request->validate([
-            'app_name' => 'nullable|string|max:255',
-            'timezone' => 'nullable|string|max:50',
-            'date_format' => 'nullable|string|max:20',
             'records_per_page' => 'nullable|integer|min:5|max:100',
         ]);
 
-        Setting::set('system.app_name', $request->app_name ?? 'Sistem Absensi', 'string', 'system', 'Nama Aplikasi', 'Nama aplikasi yang akan ditampilkan', false);
-        Setting::set('system.timezone', $request->timezone ?? 'Asia/Jakarta', 'string', 'system', 'Zona Waktu', 'Zona waktu sistem', false);
-        Setting::set('system.date_format', $request->date_format ?? 'd/m/Y', 'string', 'system', 'Format Tanggal', 'Format tampilan tanggal', false);
         Setting::set('system.records_per_page', (int) ($request->records_per_page ?? 10), 'integer', 'system', 'Data per Halaman', 'Jumlah data yang ditampilkan per halaman', false);
+        Setting::set('system.auto_mark_absent', $request->has('auto_mark_absent') && $request->auto_mark_absent == '1', 'boolean', 'system', 'Auto Mark Siswa Alpha', 'Otomatis menandai siswa yang tidak hadir sebagai alpha', false);
 
         return back()->with('success', 'Pengaturan sistem berhasil diperbarui.');
     }

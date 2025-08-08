@@ -83,39 +83,21 @@ class SettingsSeeder extends Seeder
 
             // System Settings
             [
-                'key' => 'system.app_name',
-                'value' => 'Sistem Absensi',
-                'type' => 'string',
-                'group' => 'system',
-                'label' => 'Nama Aplikasi',
-                'description' => 'Nama aplikasi yang akan ditampilkan',
-                'is_encrypted' => false
-            ],
-            [
-                'key' => 'system.timezone',
-                'value' => 'Asia/Jakarta',
-                'type' => 'string',
-                'group' => 'system',
-                'label' => 'Zona Waktu',
-                'description' => 'Zona waktu sistem',
-                'is_encrypted' => false
-            ],
-            [
-                'key' => 'system.date_format',
-                'value' => 'd/m/Y',
-                'type' => 'string',
-                'group' => 'system',
-                'label' => 'Format Tanggal',
-                'description' => 'Format tampilan tanggal',
-                'is_encrypted' => false
-            ],
-            [
                 'key' => 'system.records_per_page',
                 'value' => '10',
                 'type' => 'integer',
                 'group' => 'system',
                 'label' => 'Data per Halaman',
                 'description' => 'Jumlah data yang ditampilkan per halaman',
+                'is_encrypted' => false
+            ],
+            [
+                'key' => 'system.auto_mark_absent',
+                'value' => '1',
+                'type' => 'boolean',
+                'group' => 'system',
+                'label' => 'Auto Mark Siswa Alpha',
+                'description' => 'Otomatis menandai siswa yang tidak hadir sebagai alpha',
                 'is_encrypted' => false
             ]
         ];

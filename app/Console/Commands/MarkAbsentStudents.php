@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Student;
 use App\Models\Attendance;
+use App\Models\Setting;
 use Carbon\Carbon;
 
 class MarkAbsentStudents extends Command
@@ -14,7 +15,7 @@ class MarkAbsentStudents extends Command
      *
      * @var string
      */
-    protected $signature = 'attendance:mark-absent {date?}';
+    protected $signature = 'attendance:mark-absent {date?} {--force : Force marking even if auto mark is disabled}';
 
     /**
      * The console command description.
@@ -28,6 +29,15 @@ class MarkAbsentStudents extends Command
      */
     public function handle()
     {
+        // Check if auto mark is enabled (unless forced)
+        if (!$this->option('force')) {
+            $autoMarkEnabled = Setting::get('system.auto_mark_absent', true);
+            if (!$autoMarkEnabled) {
+                $this->warn('Auto mark absent is disabled in settings. Use --force to override.');
+                return;
+            }
+        }
+
         $date = $this->argument('date') ? Carbon::parse($this->argument('date')) : Carbon::today();
         
         // Check if it's a working day
