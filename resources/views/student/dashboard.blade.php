@@ -2,45 +2,194 @@
 
 @section('title', 'Dashboard Siswa')
 
+@section('styles')
+<style>
+    /* Mobile-first responsive styles */
+    .qr-code-container svg {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    .profile-item {
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 0.5rem;
+    }
+    
+    .profile-item:last-child {
+        border-bottom: none;
+    }
+    
+    .card {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .card-header h6 {
+        font-weight: 600;
+    }
+    
+    /* Consistent spacing for all sections */
+    .row {
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
+    }
+    
+    .row > [class*="col-"] {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    /* Better mobile spacing */
+    @media (max-width: 768px) {
+        .container-fluid {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        
+        .h2-md {
+            font-size: 1.5rem !important;
+        }
+        
+        .card-body {
+            padding: 1rem !important;
+        }
+        
+        .btn-lg {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+        
+        /* Ensure consistent margins on mobile */
+        .mb-3 {
+            margin-bottom: 1rem !important;
+        }
+        
+        .mb-md-4 {
+            margin-bottom: 1rem !important;
+        }
+    }
+    
+    @media (min-width: 768px) {
+        .mb-md-4 {
+            margin-bottom: 1.5rem !important;
+        }
+    }
+    
+    /* QR Code responsive container */
+    .qr-code-container {
+        max-width: 100%;
+        overflow: hidden;
+    }
+    
+    /* Better button spacing for mobile */
+    .gap-2 > * {
+        margin-bottom: 0.5rem;
+    }
+    
+    @media (min-width: 576px) {
+        .gap-2 > * {
+            margin-bottom: 0;
+        }
+    }
+</style>
+@endsection
+
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid px-3 px-md-4">
     <!-- Header Info -->
-    <div class="row mb-4">
+    <div class="row mb-3 mb-md-4">
         <div class="col-12">
-            <div class="welcome-header">
-                <h2 class="mb-1">Selamat Datang, {{ auth('student')->user()->name }}!</h2>
-                <p>{{ date('l, d F Y') }}</p>
+            <div class="welcome-header text-center text-md-start">
+                <h2 class="mb-1 h3 h2-md">Selamat Datang, {{ auth('student')->user()->name }}!</h2>
+                <p class="small">{{ date('l, d F Y') }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Section -->
+    <div class="row mb-3 mb-md-4">
+        <div class="col-12">
+            <div class="card border-0" style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div class="card-body py-3 py-md-4 px-3 px-md-4">
+                    <h5 class="card-title mb-3 mb-md-4 text-primary text-center">
+                        <i class="fas fa-qrcode me-2"></i>
+                        QR Code Absensi Anda
+                    </h5>
+                    
+                    <div class="row">
+                        <!-- QR Code Section - Mobile First -->
+                        <div class="col-12 col-md-6 text-center mb-4 mb-md-0">
+                            <div class="qr-code-container p-3 bg-white rounded border shadow-sm mx-auto" style="display: inline-block; max-width: 220px;">
+                                {!! QrCode::size(180)->generate(auth('student')->user()->qr_code) !!}
+                            </div>
+                            <div class="mt-3">
+                                <p class="mb-2 small"><strong>Kode QR:</strong></p>
+                                <code class="bg-light p-2 rounded small d-block text-break" style="word-break: break-all; font-size: 0.75rem;">{{ auth('student')->user()->qr_code }}</code>
+                            </div>
+                            <div class="mt-3 d-flex flex-column flex-sm-row gap-2 justify-content-center">
+                                <button class="btn btn-outline-primary btn-sm" onclick="downloadQR()">
+                                    <i class="fas fa-download me-2"></i>Download
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="printQR()">
+                                    <i class="fas fa-print me-2"></i>Print
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Instructions Section -->
+                        <div class="col-12 col-md-6">
+                            <div class="alert alert-info text-start mt-3 mt-md-0">
+                                <h6 class="mb-3"><i class="fas fa-info-circle me-2"></i>Cara Menggunakan:</h6>
+                                <ol class="mb-0 small lh-base">
+                                    <li class="mb-2">Tunjukkan QR code ini kepada admin/guru</li>
+                                    <li class="mb-2">Admin/guru akan melakukan scan menggunakan scanner</li>
+                                    <li class="mb-2">Absensi Anda akan tercatat otomatis</li>
+                                    <li>Orang tua akan menerima notifikasi WhatsApp</li>
+                                </ol>
+                            </div>
+                            
+                            @if($todayAttendance)
+                                <div class="alert alert-success mt-3">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong>Sudah Absen Hari Ini:</strong><br>
+                                    Status: {{ ucfirst($todayAttendance->status) }}<br>
+                                    Waktu: {{ $todayAttendance->attendance_time->format('H:i') }}
+                                    @if($todayAttendance->scanned_by)
+                                        <br><small>Di-scan oleh: {{ $todayAttendance->scannedBy->name }}</small>
+                                    @endif
+                                </div>
+                            @else
+                                <div class="alert alert-warning mt-3">
+                                    <i class="fas fa-clock me-2"></i>
+                                    <strong>Belum Absen Hari Ini</strong><br>
+                                    <small>Pastikan QR code dapat di-scan dengan jelas</small>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Quick Actions -->
-    <div class="row mb-4">
+    <div class="row mb-3 mb-md-4">
         <div class="col-12">
             <div class="card border-0" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 15px;">
-                <div class="card-body text-center py-4">
+                <div class="card-body text-center py-3 py-md-4 px-3 px-md-4">
                     <h5 class="card-title mb-3 text-primary">
                         <i class="fas fa-user-circle me-2"></i>
-                        Kelola Profil & QR Code Anda
+                        Kelola Profil Anda
                     </h5>
                     
                     <div class="row justify-content-center">
-                        <div class="col-md-6 mb-3">
-                            <a href="{{ route('student.qr-code.show') }}" class="btn btn-primary btn-lg w-100">
-                                <i class="fas fa-qrcode me-2"></i>
-                                Lihat QR Code Saya
-                            </a>
-                            <small class="text-muted d-block mt-2">
-                                Tampilkan QR code untuk di-scan oleh admin/guru
-                            </small>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <a href="{{ route('student.profile.show') }}" class="btn btn-outline-primary btn-lg w-100">
+                        <div class="col-12 col-md-8 col-lg-6 mb-3">
+                            <a href="{{ route('student.profile') }}" class="btn btn-primary btn-lg w-100">
                                 <i class="fas fa-user-edit me-2"></i>
                                 Edit Profil
                             </a>
                             <small class="text-muted d-block mt-2">
-                                Kelola informasi profil dan data pribadi
+                                Kelola informasi profil dan nomor WhatsApp orang tua
                             </small>
                         </div>
                     </div>
@@ -58,7 +207,7 @@
                         <div class="alert alert-warning mt-3 mb-0">
                             <i class="fas fa-clock me-2"></i>
                             <strong>Belum Absen Hari Ini</strong><br>
-                            <small>Silakan tunjukkan QR code Anda kepada admin/guru untuk melakukan absensi</small>
+                            <small>Admin/guru akan melakukan scan untuk mencatat absensi Anda. Pastikan Anda hadir di kelas.</small>
                         </div>
                     @endif
                 </div>
@@ -67,7 +216,7 @@
     </div>
 
     <!-- Quick Stats -->
-    <div class="row mb-4">
+    <div class="row mb-3 mb-md-4">
         <div class="col-6 col-md-3 mb-3">
             <div class="stat-card stat-present">
                 <div class="stat-icon">
@@ -125,14 +274,14 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mb-3 mb-md-4">
         <!-- Attendance Status Section -->
-        <div class="col-12 col-lg-8 mb-4">
+        <div class="col-12 col-lg-8 mb-3 mb-md-4">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Status Absensi Hari Ini</h5>
+                    <h6 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Status Absensi Hari Ini</h6>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-3">
                     @if($todayAttendance)
                         <div class="alert alert-success mb-0">
                             <i class="fas fa-check-circle me-2"></i>
@@ -150,10 +299,10 @@
                         <div class="alert alert-warning mb-0">
                             <i class="fas fa-clock me-2"></i>
                             <strong>Belum Melakukan Absensi</strong><br>
-                            Silakan tunjukkan QR code Anda kepada admin atau guru untuk melakukan absensi.<br>
-                            <small class="text-muted mt-2">
+                            Admin atau guru akan melakukan scan untuk mencatat absensi Anda.<br>
+                            <small class="text-muted mt-2 d-block">
                                 <i class="fas fa-info-circle me-1"></i>
-                                Pastikan QR code Anda dapat terlihat dengan jelas saat di-scan.
+                                Pastikan Anda hadir di kelas saat waktu absensi.
                             </small>
                         </div>
                     @endif
@@ -162,28 +311,24 @@
         </div>
 
         <!-- Profile Section -->
-        <div class="col-12 col-lg-4 mb-4">
+        <div class="col-12 col-lg-4 mb-3 mb-md-4">
             <div class="card">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Profil Siswa</h5>
+                    <h6 class="mb-0"><i class="fas fa-user me-2"></i>Profil Siswa</h6>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-3">
                     <div class="profile-info">
-                        <div class="profile-item">
-                            <label>Nama:</label>
-                            <span>{{ auth('student')->user()->name }}</span>
+                        <div class="profile-item mb-2">
+                            <label class="small text-muted">Nama:</label>
+                            <span class="d-block">{{ auth('student')->user()->name }}</span>
                         </div>
-                        <div class="profile-item">
-                            <label>NIS:</label>
-                            <span>{{ auth('student')->user()->nis }}</span>
+                        <div class="profile-item mb-2">
+                            <label class="small text-muted">NIS:</label>
+                            <span class="d-block">{{ auth('student')->user()->nis }}</span>
                         </div>
-                        <div class="profile-item">
-                            <label>Kelas:</label>
-                            <span>{{ auth('student')->user()->schoolClass->name }}</span>
-                        </div>
-                        <div class="profile-item">
-                            <label>Email:</label>
-                            <span>{{ auth('student')->user()->email }}</span>
+                        <div class="profile-item mb-3">
+                            <label class="small text-muted">Kelas:</label>
+                            <span class="d-block">{{ auth('student')->user()->schoolClass->name }}</span>
                         </div>
                     </div>
                     
@@ -198,25 +343,25 @@
     </div>
 
     <!-- Recent Attendance -->
-    <div class="row">
+    <div class="row mb-3 mb-md-4">
         <div class="col-12">
             <div class="card">
                 <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Riwayat Absensi Terakhir</h5>
+                    <h6 class="mb-0"><i class="fas fa-history me-2"></i>Riwayat Absensi Terakhir</h6>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-2 p-md-3">
                     @if($recentAttendances->count() > 0)
                         <div class="table-responsive">
-                            <table class="table table-hover">
+                            <table class="table table-hover table-sm">
                                 <thead>
                                     <tr>
-                                        <th>Tanggal</th>
-                                        <th>Status</th>
-                                        <th>Waktu</th>
-                                        <th class="d-none d-sm-table-cell">QR Code</th>
+                                        <th class="small">Tanggal</th>
+                                        <th class="small">Status</th>
+                                        <th class="small">Waktu</th>
+                                        <th class="d-none d-md-table-cell small">Di-scan oleh</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="small">
                                     @foreach($recentAttendances as $attendance)
                                     <tr>
                                         <td>{{ $attendance->attendance_time->format('d/m/Y') }}</td>
@@ -230,9 +375,9 @@
                                             </span>
                                         </td>
                                         <td>{{ $attendance->attendance_time->format('H:i') }}</td>
-                                        <td class="d-none d-sm-table-cell">
-                                            @if($attendance->dailyQrCode)
-                                                <small class="text-muted">{{ substr($attendance->dailyQrCode->qr_code, 0, 8) }}...</small>
+                                        <td class="d-none d-md-table-cell">
+                                            @if($attendance->scanned_by)
+                                                <small class="text-muted">{{ $attendance->scannedBy->name }}</small>
                                             @else
                                                 <small class="text-muted">Manual</small>
                                             @endif
@@ -254,133 +399,161 @@
     </div>
 </div>
 
-<!-- QR Scanner Modal -->
-<div class="modal fade" id="qrScanModal" tabindex="-1" aria-labelledby="qrScanModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="qrScanModalLabel">Scan QR Code</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-                <div id="qr-reader" style="width: 100%;"></div>
-                <div id="qr-result" style="display: none;">
-                    <div class="alert alert-success">
-                        <h5>QR Code Terdeteksi!</h5>
-                        <p id="qr-result-text"></p>
-                        <button type="button" class="btn btn-primary" onclick="submitAttendance()">
-                            Konfirmasi Absensi
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 @endsection
-
 @section('scripts')
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
-let html5QrCode = null;
-let scannedQrCode = null;
-
-function startQrScan() {
-    $('#qrScanModal').modal('show');
-    
-    html5QrCode = new Html5Qrcode("qr-reader");
-    
-    html5QrCode.start(
-        { facingMode: "environment" },
-        {
-            fps: 10,
-            qrbox: { width: 250, height: 250 }
-        },
-        (decodedText, decodedResult) => {
-            console.log(`QR Code detected: ${decodedText}`);
-            scannedQrCode = decodedText;
-            
-            // Stop scanning
-            html5QrCode.stop().then(() => {
-                // Show result
-                document.getElementById('qr-result-text').textContent = 'QR Code: ' + decodedText;
-                document.getElementById('qr-reader').style.display = 'none';
-                document.getElementById('qr-result').style.display = 'block';
-            });
-        },
-        (errorMessage) => {
-            // Handle scan error
-            console.log(`QR Code scan error: ${errorMessage}`);
-        }
-    ).catch(err => {
-        console.log(`Unable to start scanning: ${err}`);
-        alert('Tidak dapat mengakses kamera. Pastikan browser memiliki izin kamera.');
-    });
-}
-
-function submitAttendance() {
-    if (!scannedQrCode) {
-        alert('QR Code tidak terdeteksi');
+function downloadQR() {
+    const svg = document.querySelector('.qr-code-container svg');
+    if (!svg) {
+        alert('QR Code belum dimuat!');
         return;
     }
     
-    // Show loading
-    document.getElementById('qr-result').innerHTML = `
-        <div class="text-center">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
+    // Student data
+    const studentName = '{{ auth("student")->user()->name }}';
+    const studentNIS = '{{ auth("student")->user()->nis }}';
+    
+    // Convert SVG to Canvas and download
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    // Set canvas size
+    canvas.width = 400;
+    canvas.height = 500;
+    
+    // Create data URL from SVG
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+    const svgUrl = URL.createObjectURL(svgBlob);
+    
+    img.onload = function() {
+        // White background
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Add title
+        ctx.fillStyle = 'black';
+        ctx.font = 'bold 24px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('QR Code Siswa', canvas.width / 2, 40);
+        
+        // Add student info
+        ctx.font = '18px Arial';
+        ctx.fillText(studentName, canvas.width / 2, 70);
+        ctx.font = '14px Arial';
+        ctx.fillText(`NIS: ${studentNIS}`, canvas.width / 2, 90);
+        
+        // Draw QR code
+        const qrSize = 200;
+        const qrX = (canvas.width - qrSize) / 2;
+        const qrY = 120;
+        ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+        
+        // Add footer
+        ctx.font = '12px Arial';
+        ctx.fillText('Sistem Absensi Siswa', canvas.width / 2, canvas.height - 40);
+        ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, canvas.height - 20);
+        
+        // Download
+        const link = document.createElement('a');
+        link.download = `QR_${studentName}_${studentNIS}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+        
+        URL.revokeObjectURL(svgUrl);
+    };
+    
+    img.src = svgUrl;
+}
+
+function printQR() {
+    const svg = document.querySelector('.qr-code-container svg');
+    if (!svg) {
+        alert('QR Code belum dimuat!');
+        return;
+    }
+    
+    // Student data
+    const studentName = '{{ auth("student")->user()->name }}';
+    const studentNIS = '{{ auth("student")->user()->nis }}';
+    
+    // Create print content
+    const printContent = `
+        <div class="print-area">
+            <h1>QR Code Siswa</h1>
+            <div class="student-info">
+                <strong>${studentName}</strong><br>
+                NIS: ${studentNIS}
             </div>
-            <p class="mt-2">Memproses absensi...</p>
+            <div style="margin: 30px 0;">
+                ${svg.outerHTML}
+            </div>
+            <div style="margin-top: 30px; font-size: 12px; color: #666;">
+                <p>Sistem Absensi Siswa</p>
+                <p>Dicetak pada: ${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID')}</p>
+                <p style="margin-top: 20px; font-size: 10px;">
+                    QR Code ini digunakan untuk absensi siswa.<br>
+                    Admin/Guru dapat memindai QR ini untuk mencatat kehadiran.
+                </p>
+            </div>
         </div>
     `;
     
-    // Submit to server
-    fetch('{{ route("student.scan-qr") }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify({
-            qr_code: scannedQrCode
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            $('#qrScanModal').modal('hide');
-            alert('Absensi berhasil dicatat dengan status: ' + data.status);
-            location.reload();
-        } else {
-            let errorMessage = 'Error: ' + data.message;
-            
-            // Add debug info if available
-            if (data.debug) {
-                console.log('Debug Info:', data.debug);
-                errorMessage += '\n\nDebug Info:\n' + JSON.stringify(data.debug, null, 2);
-            }
-            
-            alert(errorMessage);
-            $('#qrScanModal').modal('hide');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Terjadi kesalahan saat memproses absensi');
-        $('#qrScanModal').modal('hide');
-    });
+    // Open new window for printing
+    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Print QR Code - ${studentName}</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 20px;
+                    text-align: center;
+                }
+                .print-area {
+                    max-width: 400px;
+                    margin: 0 auto;
+                }
+                h1 {
+                    color: #333;
+                    margin-bottom: 10px;
+                }
+                .student-info {
+                    margin-bottom: 20px;
+                    font-size: 16px;
+                }
+                svg {
+                    max-width: 200px;
+                    height: auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                }
+                @media print {
+                    body {
+                        margin: 0;
+                        padding: 0;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            ${printContent}
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.focus();
+    
+    // Auto print after content loads
+    setTimeout(() => {
+        printWindow.print();
+        setTimeout(() => printWindow.close(), 1000);
+    }, 500);
 }
-
-// Clean up on modal close
-$('#qrScanModal').on('hidden.bs.modal', function () {
-    if (html5QrCode) {
-        html5QrCode.stop().catch(err => console.log(err));
-        html5QrCode = null;
-    }
-    scannedQrCode = null;
-    document.getElementById('qr-reader').style.display = 'block';
-    document.getElementById('qr-result').style.display = 'none';
-});
 </script>
 @endsection

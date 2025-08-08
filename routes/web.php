@@ -86,11 +86,6 @@ Route::prefix('student')->name('student.')->group(function () {
         // Dashboard
         Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
         
-        // QR Code Management untuk Student
-        Route::get('/qr-code', [App\Http\Controllers\Student\QrCodeController::class, 'show'])->name('qr-code');
-        Route::get('/qr-code/download', [App\Http\Controllers\Student\QrCodeController::class, 'download'])->name('qr-code.download');
-        Route::post('/qr-code/regenerate', [App\Http\Controllers\Student\QrCodeController::class, 'regenerate'])->name('qr-code.regenerate');
-        
         // Profile Management
         Route::get('/profile', [App\Http\Controllers\Student\ProfileController::class, 'show'])->name('profile');
         Route::put('/profile', [App\Http\Controllers\Student\ProfileController::class, 'update'])->name('profile.update');
@@ -98,23 +93,5 @@ Route::prefix('student')->name('student.')->group(function () {
         // Change Password
         Route::get('/change-password', [App\Http\Controllers\Student\AuthController::class, 'showChangePasswordForm'])->name('change-password');
         Route::post('/change-password', [App\Http\Controllers\Student\AuthController::class, 'changePassword'])->name('change-password.submit');
-        
-        // Debug route
-        Route::get('/debug-qr', function() {
-            $qr = \App\Models\DailyQrCode::where('date', today())->first();
-            return response()->json([
-                'qr_exists' => $qr ? 'yes' : 'no',
-                'qr_data' => $qr ? [
-                    'id' => $qr->id,
-                    'qr_token' => $qr->qr_token,
-                    'is_active' => $qr->is_active,
-                    'valid_from' => $qr->valid_from,
-                    'valid_until' => $qr->valid_until,
-                    'current_time' => now()->format('H:i:s'),
-                    'isValidNow' => $qr->isValidNow(),
-                    'canStillScan' => $qr->canStillScan()
-                ] : null
-            ]);
-        })->name('debug-qr');
     });
 });

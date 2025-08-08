@@ -16,11 +16,6 @@ class Authenticate extends Middleware
             return null;
         }
 
-        // Check if this is a student route
-        if ($request->is('student/*')) {
-            return route('student.login');
-        }
-
         // Default to admin login
         return route('login');
     }

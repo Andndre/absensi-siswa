@@ -34,17 +34,12 @@ class Student extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // Auto-generate email and password saat create
+        // Auto-generate password dan QR code saat create
     protected static function boot()
     {
         parent::boot();
         
         static::creating(function ($student) {
-            // Generate email dari NIS jika tidak ada
-            if (empty($student->email)) {
-                $student->email = $student->nis . '@student.sekolah.id';
-            }
-            
             // Generate password default dari NIS jika tidak ada
             if (empty($student->password)) {
                 $student->password = Hash::make($student->nis);
@@ -127,11 +122,6 @@ class Student extends Authenticatable
         $this->update([
             'password' => Hash::make($this->nis)
         ]);
-    }
-    
-    public function getDisplayEmail()
-    {
-        return $this->email ?? $this->nis . '@student.sekolah.id';
     }
     
     // QR Code methods

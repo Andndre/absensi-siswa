@@ -465,11 +465,6 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('student.qr-code*') ? 'active' : '' }}" href="{{ route('student.qr-code') }}">
-                            <i class="fas fa-qrcode me-1"></i>QR Code Saya
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('student.profile*') ? 'active' : '' }}" href="{{ route('student.profile') }}">
                             <i class="fas fa-user-edit me-1"></i>Profil
                         </a>

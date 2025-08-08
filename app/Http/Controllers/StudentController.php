@@ -73,7 +73,7 @@ class StudentController extends Controller
         Student::create([
             'name' => $request->name,
             'nis' => $request->nis,
-            'email' => $request->email ?: $request->nis . '@student.sekolah.id',
+            'email' => $request->email, // Optional, no auto-generation
             'password' => Hash::make($request->nis), // Default password = NIS
             'school_class_id' => $request->school_class_id,
             'parent_whatsapp_number' => $request->parent_whatsapp_number,
@@ -122,7 +122,7 @@ class StudentController extends Controller
         $updateData = [
             'name' => $request->name,
             'nis' => $request->nis,
-            'email' => $request->email ?: $request->nis . '@student.sekolah.id',
+            'email' => $request->email, // Optional, no auto-generation
             'school_class_id' => $request->school_class_id,
             'parent_whatsapp_number' => $request->parent_whatsapp_number,
             'is_active' => $request->has('is_active'),
