@@ -81,26 +81,6 @@ class SettingsSeeder extends Seeder
                 'is_encrypted' => false
             ],
 
-            // Attendance Settings
-            [
-                'key' => 'attendance.start_time',
-                'value' => '06:00',
-                'type' => 'string',
-                'group' => 'attendance',
-                'label' => 'Mulai Absensi',
-                'description' => 'Waktu mulai absensi (format: HH:MM)',
-                'is_encrypted' => false
-            ],
-            [
-                'key' => 'attendance.end_time',
-                'value' => '08:00',
-                'type' => 'string',
-                'group' => 'attendance',
-                'label' => 'Akhir Absensi',
-                'description' => 'Waktu akhir absensi (format: HH:MM)',
-                'is_encrypted' => false
-            ],
-
             // System Settings
             [
                 'key' => 'system.app_name',

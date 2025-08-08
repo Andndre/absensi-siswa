@@ -13,7 +13,6 @@ class SettingsController extends Controller
         $settings = [
             'whatsapp' => Setting::getByGroup('whatsapp'),
             'school' => Setting::getByGroup('school'),
-            'attendance' => Setting::getByGroup('attendance'),
             'system' => Setting::getByGroup('system'),
         ];
 
@@ -59,19 +58,6 @@ class SettingsController extends Controller
         Setting::set('school.email', $request->email ?? '', 'string', 'school', 'Email Sekolah', 'Email sekolah', false);
 
         return back()->with('success', 'Informasi sekolah berhasil diperbarui.');
-    }
-
-    public function updateAttendance(Request $request)
-    {
-        $request->validate([
-            'start_time' => 'nullable|date_format:H:i',
-            'end_time' => 'nullable|date_format:H:i',
-        ]);
-
-        Setting::set('attendance.start_time', $request->start_time ?? '06:00', 'string', 'attendance', 'Mulai Absensi', 'Waktu mulai absensi', false);
-        Setting::set('attendance.end_time', $request->end_time ?? '08:00', 'string', 'attendance', 'Akhir Absensi', 'Waktu akhir absensi', false);
-
-        return back()->with('success', 'Pengaturan absensi berhasil diperbarui.');
     }
 
     public function updateSystem(Request $request)

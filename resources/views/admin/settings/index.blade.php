@@ -49,11 +49,6 @@
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="attendance-tab" data-bs-toggle="tab" data-bs-target="#attendance" type="button" role="tab">
-                        <i class="fas fa-clock me-2"></i>Absensi
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
                     <button class="nav-link" id="system-tab" data-bs-toggle="tab" data-bs-target="#system" type="button" role="tab">
                         <i class="fas fa-cog me-2"></i>Sistem
                     </button>
@@ -163,57 +158,6 @@
                                     <label for="school_email" class="form-label">Email</label>
                                     <input type="email" class="form-control" id="school_email" name="email" 
                                            value="{{ $settings['school']['email'] ?? '' }}">
-                                </div>
-
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save me-2"></i>Simpan Pengaturan
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Attendance Settings -->
-                <div class="tab-pane fade" id="attendance" role="tabpanel">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-clock text-warning me-2"></i>
-                                Pengaturan Absensi
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <form action="{{ route('admin.settings.attendance') }}" method="POST">
-                                @csrf
-                                @method('PUT')
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="start_time" class="form-label">Mulai Absensi</label>
-                                            <input type="time" class="form-control" id="start_time" name="start_time" 
-                                                   value="{{ $settings['attendance']['start_time'] ?? '06:00' }}" required>
-                                            <div class="form-text">Waktu mulai QR code absensi dapat digunakan</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="end_time" class="form-label">Akhir Absensi</label>
-                                            <input type="time" class="form-control" id="end_time" name="end_time" 
-                                                   value="{{ $settings['attendance']['end_time'] ?? '08:00' }}" required>
-                                            <div class="form-text">Waktu akhir QR code absensi dapat digunakan</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    <strong>Keterangan:</strong>
-                                    <ul class="mb-0 mt-2">
-                                        <li>Waktu ini akan digunakan sebagai default saat membuat QR code absensi hari ini</li>
-                                        <li>QR code hanya aktif dalam rentang waktu yang ditentukan</li>
-                                        <li>Siswa tidak dapat scan QR code di luar waktu yang ditentukan</li>
-                                    </ul>
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">

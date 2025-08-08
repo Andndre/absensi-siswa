@@ -78,7 +78,6 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::get('/', [SettingsController::class, 'index'])->name('index');
         Route::put('/whatsapp', [SettingsController::class, 'updateWhatsApp'])->name('whatsapp');
         Route::put('/school', [SettingsController::class, 'updateSchool'])->name('school');
-        Route::put('/attendance', [SettingsController::class, 'updateAttendance'])->name('attendance');
         Route::put('/system', [SettingsController::class, 'updateSystem'])->name('system');
         Route::post('/test-whatsapp', [SettingsController::class, 'testWhatsApp'])->name('test-whatsapp');
     });
