@@ -173,4 +173,99 @@ class AttendanceController extends Controller
 
         return back()->with('success', 'Status absensi berhasil diubah dari ' . ucfirst($oldStatus) . ' menjadi ' . ucfirst($request->status));
     }
+    
+    /**
+     * Show QR scanner page for admin
+     */
+    public function scanner()
+    {
+        $classes = SchoolClass::orderBy('name')->get();
+        $todayStats = $this->getAttendanceStats(Carbon::today()->format('Y-m-d'));
+        
+        return view('attendance.scanner', compact('classes', 'todayStats'));
+    }
+    
+    /**
+     * Process student QR code scan
+     */
+    public function scanStudentQr(Request $request)
+    {
+        $request->validate([
+            'qr_code' => 'required|string',
+            'status' => 'required|in:hadir,terlambat,izin,sakit,alpha',
+            'notes' => 'nullable|string|max:255'
+        ]);
+        
+        try {
+            // Debug log QR code
+            Log::info('QR Code yang dipindai: ' . $request->qr_code);
+            
+            // Cari siswa berdasarkan QR code
+            $student = Student::findByQrCode($request->qr_code);
+            
+            if (!$student) {
+                Log::warning('QR Code tidak ditemukan: ' . $request->qr_code);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'QR Code tidak ditemukan atau siswa tidak aktif. QR Code: ' . $request->qr_code
+                ]);
+            }
+            
+            // Cek apakah siswa sudah absen hari ini
+            $today = Carbon::today();
+            $existingAttendance = $student->attendances()
+                ->whereDate('attendance_time', $today)
+                ->first();
+                
+            if ($existingAttendance) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Siswa ' . $student->name . ' sudah melakukan absensi hari ini dengan status: ' . ucfirst($existingAttendance->status),
+                    'student' => [
+                        'name' => $student->name,
+                        'nis' => $student->nis,
+                        'class' => $student->schoolClass->name ?? 'Tidak ada kelas',
+                        'existing_status' => $existingAttendance->status,
+                        'attendance_time' => $existingAttendance->attendance_time->format('H:i:s')
+                    ]
+                ]);
+            }
+            
+            // Buat record absensi baru
+            $attendance = Attendance::create([
+                'student_id' => $student->id,
+                'scanned_by' => auth()->id(),
+                'student_qr_code' => $request->qr_code,
+                'attendance_time' => now(),
+                'status' => $request->status,
+                'scan_method' => 'student_qr_scan',
+                'notes' => $request->notes
+            ]);
+            
+            Log::info('Absensi berhasil dicatat untuk siswa: ' . $student->name);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Absensi berhasil dicatat',
+                'student' => [
+                    'name' => $student->name,
+                    'nis' => $student->nis,
+                    'class' => $student->schoolClass->name ?? 'Tidak ada kelas',
+                    'status' => $request->status,
+                    'attendance_time' => $attendance->attendance_time->format('H:i:s')
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error scanning student QR: ' . $e->getMessage(), [
+                'qr_code' => $request->qr_code,
+                'stack_trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat memproses QR code: ' . $e->getMessage()
+            ]);
+        }
+    }
 }

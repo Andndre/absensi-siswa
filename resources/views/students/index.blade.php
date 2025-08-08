@@ -105,11 +105,11 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th width="5%">#</th>
-                                        <th width="25%">Nama Siswa</th>
+                                        <th width="20%">Nama Siswa</th>
                                         <th width="15%">NIS</th>
                                         <th width="15%">Kelas</th>
                                         <th width="20%">No. WhatsApp Ortu</th>
-                                        <th width="20%">Aksi</th>
+                                        <th width="25%">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -136,6 +136,11 @@
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-sm btn-success" 
+                                                        title="QR Code" 
+                                                        onclick="showQrModal('{{ $student->id }}', '{{ $student->name }}', '{{ $student->nis }}', '{{ $student->qr_code }}')">
+                                                    <i class="bi bi-qr-code"></i>
+                                                </button>
                                                 <a href="{{ route('admin.students.show', $student) }}" 
                                                    class="btn btn-sm btn-info" title="Detail">
                                                     <i class="bi bi-eye"></i>
@@ -203,6 +208,48 @@
     </div>
 </div>
 
+<!-- Modal QR Code -->
+<div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="qrModalLabel">
+                    <i class="bi bi-qr-code me-2"></i>QR Code Siswa
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="mb-3">
+                    <h6 class="text-primary" id="studentName"></h6>
+                    <small class="text-muted">NIS: <span id="studentNis"></span></small>
+                </div>
+                
+                <div class="qr-container mb-4" id="qrContainer">
+                    <!-- QR Code akan dimuat di sini -->
+                </div>
+                
+                <div class="alert alert-info border-0" style="background: linear-gradient(135deg, #e7f3ff 0%, #f0f8ff 100%);">
+                    <small>
+                        <i class="bi bi-info-circle me-1"></i>
+                        QR Code ini digunakan untuk absensi siswa. Admin/Guru dapat memindai QR ini untuk mencatat kehadiran.
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>Tutup
+                </button>
+                <button type="button" class="btn btn-success" onclick="downloadQr()">
+                    <i class="bi bi-download me-1"></i>Download
+                </button>
+                <button type="button" class="btn btn-primary" onclick="printQr()">
+                    <i class="bi bi-printer me-1"></i>Print
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
 /* Responsive pagination styles */
 @media (max-width: 768px) {
@@ -239,14 +286,316 @@
     border-color: #adb5bd;
     color: #0d6efd;
 }
+
+/* QR Modal Styles */
+.qr-container {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    padding: 30px;
+    border-radius: 15px;
+    border: 2px dashed #dee2e6;
+    margin: 20px auto;
+    max-width: 300px;
+}
+
+.qr-container svg {
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    border-bottom: none;
+    padding: 20px 30px;
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+.modal-footer {
+    border-top: 1px solid #f1f3f4;
+    padding: 20px 30px;
+    background-color: #f8f9fa;
+}
+
+/* Action buttons styling */
+.btn-group .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    min-width: 32px;
+}
+
+@media (max-width: 768px) {
+    .btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+    }
+    
+    .btn-group .btn-sm {
+        flex: 1;
+        min-width: 30px;
+        margin-bottom: 2px;
+    }
+}
+
+/* Print styles */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    
+    .print-area,
+    .print-area * {
+        visibility: visible;
+    }
+    
+    .print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .print-area h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #000 !important;
+    }
+    
+    .print-area .student-info {
+        font-size: 16px;
+        margin-bottom: 20px;
+        color: #000 !important;
+    }
+    
+    .print-area svg {
+        max-width: 200px;
+        height: auto;
+    }
+}
 </style>
 
 <script>
+let currentStudentData = {};
+
 function changePerPage(perPage) {
     const url = new URL(window.location);
     url.searchParams.set('per_page', perPage);
     url.searchParams.delete('page'); // Reset ke halaman pertama saat mengubah per_page
     window.location.href = url.toString();
+}
+
+// Show QR Modal
+function showQrModal(studentId, studentName, studentNis, qrCode) {
+    currentStudentData = {
+        id: studentId,
+        name: studentName,
+        nis: studentNis,
+        qrCode: qrCode
+    };
+    
+    // Update modal content
+    document.getElementById('studentName').textContent = studentName;
+    document.getElementById('studentNis').textContent = studentNis;
+    
+    // Generate QR Code
+    generateQrCode(qrCode);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('qrModal'));
+    modal.show();
+}
+
+// Generate QR Code using API
+function generateQrCode(qrCode) {
+    const container = document.getElementById('qrContainer');
+    
+    // Show loading
+    container.innerHTML = `
+        <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `;
+    
+    // Generate QR using QR Server API
+    const qrSize = 200;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(qrCode)}&format=svg&margin=10`;
+    
+    // Create SVG element
+    fetch(qrUrl)
+        .then(response => response.text())
+        .then(svgContent => {
+            container.innerHTML = svgContent;
+        })
+        .catch(error => {
+            console.error('Error generating QR code:', error);
+            container.innerHTML = `
+                <div class="text-danger">
+                    <i class="bi bi-exclamation-triangle display-4"></i>
+                    <p class="mt-2">Gagal memuat QR Code</p>
+                    <small>Silakan coba lagi</small>
+                </div>
+            `;
+        });
+}
+
+// Download QR Code
+function downloadQr() {
+    const qrSvg = document.querySelector('#qrContainer svg');
+    if (!qrSvg) {
+        alert('QR Code belum dimuat!');
+        return;
+    }
+    
+    // Convert SVG to Canvas and download
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    // Set canvas size
+    canvas.width = 400;
+    canvas.height = 500;
+    
+    // Create data URL from SVG
+    const svgData = new XMLSerializer().serializeToString(qrSvg);
+    const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+    const svgUrl = URL.createObjectURL(svgBlob);
+    
+    img.onload = function() {
+        // White background
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Add title
+        ctx.fillStyle = 'black';
+        ctx.font = 'bold 24px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('QR Code Siswa', canvas.width / 2, 40);
+        
+        // Add student info
+        ctx.font = '18px Arial';
+        ctx.fillText(currentStudentData.name, canvas.width / 2, 70);
+        ctx.font = '14px Arial';
+        ctx.fillText(`NIS: ${currentStudentData.nis}`, canvas.width / 2, 90);
+        
+        // Draw QR code
+        const qrSize = 200;
+        const qrX = (canvas.width - qrSize) / 2;
+        const qrY = 120;
+        ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+        
+        // Add footer
+        ctx.font = '12px Arial';
+        ctx.fillText('Sistem Absensi Siswa', canvas.width / 2, canvas.height - 40);
+        ctx.fillText(new Date().toLocaleDateString('id-ID'), canvas.width / 2, canvas.height - 20);
+        
+        // Download
+        const link = document.createElement('a');
+        link.download = `QR_${currentStudentData.name}_${currentStudentData.nis}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+        
+        URL.revokeObjectURL(svgUrl);
+    };
+    
+    img.src = svgUrl;
+}
+
+// Print QR Code
+function printQr() {
+    const qrSvg = document.querySelector('#qrContainer svg');
+    if (!qrSvg) {
+        alert('QR Code belum dimuat!');
+        return;
+    }
+    
+    // Create print content
+    const printContent = `
+        <div class="print-area">
+            <h1>QR Code Siswa</h1>
+            <div class="student-info">
+                <strong>${currentStudentData.name}</strong><br>
+                NIS: ${currentStudentData.nis}
+            </div>
+            <div style="margin: 30px 0;">
+                ${qrSvg.outerHTML}
+            </div>
+            <div style="margin-top: 30px; font-size: 12px; color: #666;">
+                <p>Sistem Absensi Siswa</p>
+                <p>Dicetak pada: ${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID')}</p>
+                <p style="margin-top: 20px; font-size: 10px;">
+                    QR Code ini digunakan untuk absensi siswa.<br>
+                    Admin/Guru dapat memindai QR ini untuk mencatat kehadiran.
+                </p>
+            </div>
+        </div>
+    `;
+    
+    // Open new window for printing
+    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Print QR Code - ${currentStudentData.name}</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 20px;
+                    text-align: center;
+                }
+                .print-area {
+                    max-width: 400px;
+                    margin: 0 auto;
+                }
+                h1 {
+                    color: #333;
+                    margin-bottom: 10px;
+                }
+                .student-info {
+                    margin-bottom: 20px;
+                    font-size: 16px;
+                }
+                svg {
+                    max-width: 200px;
+                    height: auto;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                }
+                @media print {
+                    body {
+                        margin: 0;
+                        padding: 0;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            ${printContent}
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.focus();
+    
+    // Auto print after content loads
+    setTimeout(() => {
+        printWindow.print();
+        setTimeout(() => printWindow.close(), 1000);
+    }, 500);
 }
 
 // Auto submit form ketika filter berubah (opsional - untuk UX yang lebih baik)

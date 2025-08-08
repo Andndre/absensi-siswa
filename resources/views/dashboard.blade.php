@@ -8,16 +8,21 @@
                 <h1 class="h3 text-primary">
                     <i class="bi bi-speedometer2 me-2"></i>Dashboard Admin
                 </h1>
-                <small class="text-muted">
-                    <?php
-                        setlocale(LC_TIME, 'id_ID.utf8');
-                        $days = ['Sunday' => 'Minggu', 'Monday' => 'Senin', 'Tuesday' => 'Selasa', 'Wednesday' => 'Rabu', 'Thursday' => 'Kamis', 'Friday' => 'Jumat', 'Saturday' => 'Sabtu'];
-                        $months = ['January' => 'Januari', 'February' => 'Februari', 'March' => 'Maret', 'April' => 'April', 'May' => 'Mei', 'June' => 'Juni', 'July' => 'Juli', 'August' => 'Agustus', 'September' => 'September', 'October' => 'Oktober', 'November' => 'November', 'December' => 'Desember'];
-                        $dayName = $days[now()->format('l')];
-                        $monthName = $months[now()->format('F')];
-                    ?>
-                    {{ $dayName }}, {{ now()->format('d ') . $monthName . now()->format(' Y') }}
-                </small>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('admin.scanner') }}" class="btn btn-primary">
+                        <i class="bi bi-qr-code-scan me-2"></i>QR Scanner
+                    </a>
+                    <small class="text-muted align-self-end">
+                        <?php
+                            setlocale(LC_TIME, 'id_ID.utf8');
+                            $days = ['Sunday' => 'Minggu', 'Monday' => 'Senin', 'Tuesday' => 'Selasa', 'Wednesday' => 'Rabu', 'Thursday' => 'Kamis', 'Friday' => 'Jumat', 'Saturday' => 'Sabtu'];
+                            $months = ['January' => 'Januari', 'February' => 'Februari', 'March' => 'Maret', 'April' => 'April', 'May' => 'Mei', 'June' => 'Juni', 'July' => 'Juli', 'August' => 'Agustus', 'September' => 'September', 'October' => 'Oktober', 'November' => 'November', 'December' => 'Desember'];
+                            $dayName = $days[now()->format('l')];
+                            $monthName = $months[now()->format('F')];
+                        ?>
+                        {{ $dayName }}, {{ now()->format('d ') . $monthName . now()->format(' Y') }}
+                    </small>
+                </div>
             </div>
         </div>
     </div>

@@ -91,118 +91,153 @@
 
     <!-- Statistics Cards -->
     <div class="row mb-4">
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card card-stats h-100 shadow-sm border-left-primary">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Absen</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['total'] }}</div>
+        <div class="col-lg-8 mb-4">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card stat-present">
+                        <div class="stat-icon">
+                            <i class="bi bi-check-circle"></i>
                         </div>
-                        <div class="col-auto">
-                            <i class="bi bi-people-fill text-primary" style="font-size: 2rem;"></i>
+                        <div class="stat-content">
+                            <div class="stat-number">{{ $stats['hadir'] ?? 0 }}</div>
+                            <div class="stat-label">Hadir</div>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar bg-success" style="width: {{ $stats['total'] > 0 ? min((($stats['hadir'] ?? 0) / $stats['total']) * 100, 100) : 0 }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card stat-late">
+                        <div class="stat-icon">
+                            <i class="bi bi-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">{{ $stats['terlambat'] ?? 0 }}</div>
+                            <div class="stat-label">Terlambat</div>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar bg-warning" style="width: {{ $stats['total'] > 0 ? min((($stats['terlambat'] ?? 0) / $stats['total']) * 100, 100) : 0 }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card stat-excused">
+                        <div class="stat-icon">
+                            <i class="bi bi-file-medical"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">{{ ($stats['izin'] ?? 0) + ($stats['sakit'] ?? 0) }}</div>
+                            <div class="stat-label">Izin/Sakit</div>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar bg-info" style="width: {{ $stats['total'] > 0 ? min(((($stats['izin'] ?? 0) + ($stats['sakit'] ?? 0)) / $stats['total']) * 100, 100) : 0 }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card stat-absent">
+                        <div class="stat-icon">
+                            <i class="bi bi-x-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">{{ $stats['alpha'] ?? 0 }}</div>
+                            <div class="stat-label">Alpha</div>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar bg-danger" style="width: {{ $stats['total'] > 0 ? min((($stats['alpha'] ?? 0) / $stats['total']) * 100, 100) : 0 }}%"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card card-stats h-100 shadow-sm border-left-success">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-bar-chart me-2"></i>Ringkasan Absensi
+                    </h6>
+                </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Hadir</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['hadir'] ?? 0 }}</div>
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="border-end">
+                                <h3 class="text-primary mb-1">{{ $stats['total'] }}</h3>
+                                <small class="text-muted">Total Absen</small>
+                            </div>
                         </div>
-                        <div class="col-auto">
-                            <i class="bi bi-person-check-fill text-success" style="font-size: 2rem;"></i>
+                        <div class="col-6 mb-3">
+                            <h3 class="text-success mb-1">{{ $stats['total'] > 0 ? round((($stats['hadir'] ?? 0) / $stats['total']) * 100, 1) : 0 }}%</h3>
+                            <small class="text-muted">Tingkat Kehadiran</small>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card card-stats h-100 shadow-sm border-left-warning">
-                <div class="card-body">
+                    
                     <div class="row">
-                        <div class="col">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Terlambat</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['terlambat'] ?? 0 }}</div>
+                        <div class="col-6 mb-2">
+                            <h4 class="text-muted mb-1">{{ $stats['belum_absen'] }}</h4>
+                            <small class="text-muted">Belum Absen</small>
                         </div>
-                        <div class="col-auto">
-                            <i class="bi bi-clock text-warning" style="font-size: 2rem;"></i>
+                        <div class="col-6 mb-2">
+                            <h4 class="text-info mb-1">{{ ($stats['izin'] ?? 0) + ($stats['sakit'] ?? 0) }}</h4>
+                            <small class="text-muted">Total Izin+Sakit</small>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card card-stats h-100 shadow-sm border-left-info">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Izin</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['izin'] ?? 0 }}</div>
+                    
+                    <!-- Progress Bar Kehadiran -->
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">Progress Kehadiran</small>
+                            <small class="text-muted">{{ $stats['total'] > 0 ? round((($stats['hadir'] ?? 0) / $stats['total']) * 100, 1) : 0 }}%</small>
                         </div>
-                        <div class="col-auto">
-                            <i class="bi bi-person-exclamation text-info" style="font-size: 2rem;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card card-stats h-100 shadow-sm border-left-secondary">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Sakit</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['sakit'] ?? 0 }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bi bi-heart-pulse text-secondary" style="font-size: 2rem;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card card-stats h-100 shadow-sm border-left-danger">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Alpha</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['alpha'] ?? 0 }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bi bi-person-x-fill text-danger" style="font-size: 2rem;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-2 col-md-4 mb-3">
-            <div class="card card-stats h-100 shadow-sm border-left-secondary">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <div class="text-xs font-weight-bold text-muted text-uppercase mb-1">Belum Absen</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['belum_absen'] }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bi bi-person-dash text-muted" style="font-size: 2rem;"></i>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: {{ $stats['total'] > 0 ? (($stats['hadir'] ?? 0) / $stats['total']) * 100 : 0 }}%"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Filter Status -->
+    @if(request('date') || request('class_id') || request('status') || request('search'))
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info border-0" style="background: linear-gradient(135deg, #e7f3ff 0%, #f0f8ff 100%);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="mb-1">
+                            <i class="bi bi-funnel me-2"></i>Filter Aktif:
+                        </h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            @if(request('date'))
+                                <span class="badge bg-primary">📅 {{ \Carbon\Carbon::parse(request('date'))->format('d F Y') }}</span>
+                            @endif
+                            @if(request('class_id'))
+                                @php $selectedClass = $classes->find(request('class_id')) @endphp
+                                <span class="badge bg-info">🏫 {{ $selectedClass->name ?? 'Kelas' }}</span>
+                            @endif
+                            @if(request('status'))
+                                <span class="badge bg-warning">📊 {{ ucfirst(request('status')) }}</span>
+                            @endif
+                            @if(request('search'))
+                                <span class="badge bg-secondary">🔍 "{{ request('search') }}"</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div>
+                        <a href="{{ route('admin.attendance.index') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Reset Filter
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <!-- Data Table -->
     <div class="row">
@@ -326,6 +361,297 @@
 </div>
 
 <style>
+/* Modern Statistics Cards - Same as Scanner */
+.stat-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: none;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.stat-card .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 2;
+}
+
+.stat-card .stat-content {
+    position: relative;
+    z-index: 2;
+}
+
+.stat-card .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-card .stat-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-card .stat-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.stat-card .progress-bar {
+    height: 100%;
+    border-radius: 0;
+    transition: width 0.6s ease;
+}
+
+/* Total Card */
+.stat-total {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: white;
+}
+
+.stat-total .stat-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.stat-total::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Present Card */
+.stat-present {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.stat-present .stat-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.stat-present::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Late Card */
+.stat-late {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+.stat-late .stat-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.stat-late::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Excused Card */
+.stat-excused {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.stat-excused .stat-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.stat-excused::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Sick Card */
+.stat-sick {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+}
+
+.stat-sick .stat-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.stat-sick::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Absent Card */
+.stat-absent {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+.stat-absent .stat-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.stat-absent::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Not Present Card */
+.stat-not-present {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: white;
+}
+
+.stat-not-present .stat-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.stat-not-present::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Percentage Card */
+.stat-percentage {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    color: white;
+}
+
+.stat-percentage .stat-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.stat-percentage::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Cards and Form Improvements */
+.card {
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-radius: 12px;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.form-select, .form-control {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-select:focus, .form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.btn-outline-primary {
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
 /* Status select styling */
 .status-select {
     padding: 4px 8px;
@@ -385,8 +711,32 @@
     font-size: 0.7rem;
 }
 
-/* Responsive pagination styles */
+/* Badge styling */
+.badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 4px 8px;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
+    .stat-card {
+        padding: 20px;
+        margin-bottom: 16px;
+    }
+    
+    .stat-card .stat-number {
+        font-size: 2rem;
+    }
+    
+    .stat-card .stat-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        margin-bottom: 12px;
+    }
+    
     .pagination {
         justify-content: center;
         margin-top: 1rem;

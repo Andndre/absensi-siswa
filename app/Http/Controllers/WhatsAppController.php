@@ -37,7 +37,7 @@ class WhatsAppController extends Controller
         try {
             $testMessage = "🔄 Test koneksi sistem absensi\n\n";
             $testMessage .= "📅 Waktu: " . now()->format('d/m/Y H:i:s') . "\n";
-            $testMessage .= "🏫 Dari: " . config('app.school_name') . "\n\n";
+            $testMessage .= "🏫 Dari: " . \App\Models\Setting::get('school.name', 'SMK Negeri 1') . "\n\n";
             $testMessage .= "✅ Jika Anda menerima pesan ini, berarti sistem notifikasi WhatsApp berfungsi dengan baik.\n\n";
             $testMessage .= "_Pesan test otomatis_";
 
@@ -70,11 +70,11 @@ class WhatsAppController extends Controller
         }
 
         try {
-            $customMessage = "📢 *PESAN DARI " . strtoupper(config('app.school_name')) . "*\n\n";
+            $customMessage = "📢 *PESAN DARI " . strtoupper(\App\Models\Setting::get('school.name', 'SMK NEGERI 1')) . "*\n\n";
             $customMessage .= "👤 *Untuk:* Orang tua dari {$student->name}\n";
             $customMessage .= "📅 *Tanggal:* " . now()->format('d/m/Y H:i:s') . "\n\n";
             $customMessage .= "💬 *Pesan:*\n{$request->message}\n\n";
-            $customMessage .= "_Pesan dari admin " . config('app.school_name') . "_";
+            $customMessage .= "_Pesan dari admin " . \App\Models\Setting::get('school.name', 'SMK Negeri 1') . "_";
 
             $this->whatsAppService->sendMessage($student->parent_whatsapp_number, $customMessage);
 
@@ -115,11 +115,11 @@ class WhatsAppController extends Controller
 
         foreach ($students as $student) {
             try {
-                $broadcastMessage = "📢 *PENGUMUMAN " . strtoupper(config('app.school_name')) . "*\n\n";
+                $broadcastMessage = "📢 *PENGUMUMAN " . strtoupper(\App\Models\Setting::get('school.name', 'SMK NEGERI 1')) . "*\n\n";
                 $broadcastMessage .= "👤 *Untuk:* Orang tua dari {$student->name}\n";
                 $broadcastMessage .= "📅 *Tanggal:* " . now()->format('d/m/Y H:i:s') . "\n\n";
                 $broadcastMessage .= "📝 *Pengumuman:*\n{$request->message}\n\n";
-                $broadcastMessage .= "_Pengumuman resmi dari " . config('app.school_name') . "_";
+                $broadcastMessage .= "_Pengumuman resmi dari " . \App\Models\Setting::get('school.name', 'SMK Negeri 1') . "_";
 
                 $this->whatsAppService->sendMessage($student->parent_whatsapp_number, $broadcastMessage);
                 $successCount++;

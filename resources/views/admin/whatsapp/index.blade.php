@@ -176,12 +176,12 @@
                             <table class="table table-sm">
                                 <tr>
                                     <td><strong>Nama Sekolah:</strong></td>
-                                    <td>{{ config('app.school_name') }}</td>
+                                    <td>{{ \App\Models\Setting::get('school.name', 'SMK Negeri 1') }}</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Fonnte Token:</strong></td>
                                     <td>
-                                        @if(config('services.fonnte.token'))
+                                        @if(\App\Models\Setting::get('whatsapp.fonnte_token'))
                                             <span class="badge bg-success">Dikonfigurasi</span>
                                         @else
                                             <span class="badge bg-danger">Belum dikonfigurasi</span>

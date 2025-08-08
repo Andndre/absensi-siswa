@@ -12,6 +12,8 @@ class Attendance extends Model
     protected $fillable = [
         'student_id', 
         'daily_qr_code_id',
+        'scanned_by',
+        'student_qr_code',
         'attendance_time', 
         'status',
         'notes',
@@ -31,6 +33,11 @@ class Attendance extends Model
     public function dailyQrCode()
     {
         return $this->belongsTo(DailyQrCode::class);
+    }
+    
+    public function scannedBy()
+    {
+        return $this->belongsTo(User::class, 'scanned_by');
     }
     
     // Scopes

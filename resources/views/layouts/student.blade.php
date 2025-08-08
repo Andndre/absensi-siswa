@@ -460,8 +460,18 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('student.dashboard') }}">
+                        <a class="nav-link {{ request()->routeIs('student.dashboard') ? 'active' : '' }}" href="{{ route('student.dashboard') }}">
                             <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('student.qr-code*') ? 'active' : '' }}" href="{{ route('student.qr-code') }}">
+                            <i class="fas fa-qrcode me-1"></i>QR Code Saya
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('student.profile*') ? 'active' : '' }}" href="{{ route('student.profile') }}">
+                            <i class="fas fa-user-edit me-1"></i>Profil
                         </a>
                     </li>
                 </ul>

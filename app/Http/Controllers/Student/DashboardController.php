@@ -35,22 +35,20 @@ class DashboardController extends Controller
             'alpha' => (clone $attendanceQuery)->where('status', 'alpha')->count(),
         ];
         
-        // Get current QR code
-        $currentQr = DailyQrCode::where('date', today())->first();
-        
         // Check if already attended today
         $todayAttendance = Attendance::where('student_id', $student->id)
             ->whereDate('attendance_time', today())
+            ->with('scannedBy')
             ->first();
         
         // Get recent attendances (last 10)
         $recentAttendances = Attendance::where('student_id', $student->id)
-            ->with('dailyQrCode')
+            ->with(['dailyQrCode', 'scannedBy'])
             ->orderBy('attendance_time', 'desc')
             ->limit(10)
             ->get();
         
-        return view('student.dashboard', compact('stats', 'currentQr', 'todayAttendance', 'recentAttendances'));
+        return view('student.dashboard', compact('stats', 'todayAttendance', 'recentAttendances'));
     }
 
     /**

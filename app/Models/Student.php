@@ -18,7 +18,8 @@ class Student extends Authenticatable
         'password',
         'school_class_id', 
         'parent_whatsapp_number',
-        'is_active'
+        'is_active',
+        'qr_code'
     ];
 
     protected $hidden = [
@@ -47,6 +48,11 @@ class Student extends Authenticatable
             // Generate password default dari NIS jika tidak ada
             if (empty($student->password)) {
                 $student->password = Hash::make($student->nis);
+            }
+            
+            // Generate QR code unik jika tidak ada
+            if (empty($student->qr_code)) {
+                $student->qr_code = $student->generateUniqueQrCode();
             }
         });
         
@@ -86,7 +92,7 @@ class Student extends Authenticatable
         $month = $month ?? now()->month;
         $year = $year ?? now()->year;
         
-        return $this->attendances()
+        $stats = $this->attendances()
                    ->whereMonth('attendance_time', $month)
                    ->whereYear('attendance_time', $year)
                    ->selectRaw('status, COUNT(*) as count')
@@ -94,6 +100,15 @@ class Student extends Authenticatable
                    ->get()
                    ->pluck('count', 'status')
                    ->toArray();
+                   
+        // Ensure all statuses are present with 0 as default
+        return array_merge([
+            'hadir' => 0,
+            'terlambat' => 0,
+            'izin' => 0,
+            'sakit' => 0,
+            'alpha' => 0
+        ], $stats);
     }
     
     // Authentication helpers
@@ -117,5 +132,29 @@ class Student extends Authenticatable
     public function getDisplayEmail()
     {
         return $this->email ?? $this->nis . '@student.sekolah.id';
+    }
+    
+    // QR Code methods
+    public function generateUniqueQrCode()
+    {
+        do {
+            $qrCode = 'STD-' . strtoupper(uniqid()) . '-' . $this->nis;
+        } while (self::where('qr_code', $qrCode)->exists());
+        
+        return $qrCode;
+    }
+    
+    public function regenerateQrCode()
+    {
+        $this->update([
+            'qr_code' => $this->generateUniqueQrCode()
+        ]);
+        
+        return $this->qr_code;
+    }
+    
+    public static function findByQrCode($qrCode)
+    {
+        return self::where('qr_code', $qrCode)->where('is_active', true)->first();
     }
 }

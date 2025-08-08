@@ -43,6 +43,19 @@
                                     <td><span class="badge bg-secondary fs-6">{{ $student->nis }}</span></td>
                                 </tr>
                                 <tr>
+                                    <th>QR Code:</th>
+                                    <td>
+                                        @if($student->qr_code)
+                                            <code class="text-primary">{{ $student->qr_code }}</code>
+                                            <button class="btn btn-sm btn-outline-primary ms-2" onclick="copyQrCode()" title="Copy QR Code">
+                                                <i class="bi bi-clipboard"></i>
+                                            </button>
+                                        @else
+                                            <span class="text-muted">Belum di-generate</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
                                     <th>Kelas:</th>
                                     <td>
                                         @if($student->schoolClass)

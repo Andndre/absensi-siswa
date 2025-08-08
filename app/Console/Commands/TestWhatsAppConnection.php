@@ -49,7 +49,7 @@ class TestWhatsAppConnection extends Command
             // Test dengan mengirim pesan sederhana
             $testMessage = "🔄 Test koneksi sistem absensi\n\n";
             $testMessage .= "📅 Waktu: " . now()->format('d/m/Y H:i:s') . "\n";
-            $testMessage .= "🏫 Dari: " . config('app.school_name') . "\n\n";
+            $testMessage .= "🏫 Dari: " . \App\Models\Setting::get('school.name', 'SMK Negeri 1') . "\n\n";
             $testMessage .= "✅ Jika Anda menerima pesan ini, berarti sistem notifikasi WhatsApp berfungsi dengan baik.\n\n";
             $testMessage .= "_Pesan test otomatis_";
 
@@ -120,7 +120,7 @@ class TestWhatsAppConnection extends Command
                 'connectOnly' => true
             ),
             CURLOPT_HTTPHEADER => array(
-                'Authorization: ' . config('services.fonnte.token')
+                'Authorization: ' . \App\Models\Setting::get('whatsapp.fonnte_token', config('services.fonnte.token', ''))
             ),
         ));
 

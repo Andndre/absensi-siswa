@@ -55,13 +55,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/attendance/report', [AttendanceController::class, 'report'])->name('attendance.report');
     Route::put('/attendance/{attendance}', [AttendanceController::class, 'update'])->name('attendance.update');
     
-    // QR Code Management Routes
-    Route::prefix('qr-code')->name('qr-code.')->group(function () {
-        Route::get('/today', [QrCodeController::class, 'showTodayQr'])->name('today');
-        Route::post('/generate', [QrCodeController::class, 'generateTodayQr'])->name('generate');
-        Route::post('/deactivate', [QrCodeController::class, 'deactivateQr'])->name('deactivate');
-        Route::get('/history', [QrCodeController::class, 'history'])->name('history');
-    });
+    // QR Scanner Routes for Admin
+    Route::get('/scanner', [AttendanceController::class, 'scanner'])->name('scanner');
+    Route::post('/scan-student-qr', [AttendanceController::class, 'scanStudentQr'])->name('scan-student-qr');
     
     // Student Routes
     Route::resource('students', StudentController::class);
@@ -94,7 +90,15 @@ Route::prefix('student')->name('student.')->group(function () {
     Route::middleware('student.auth')->group(function () {
         // Dashboard
         Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
-        Route::post('/scan-qr', [StudentDashboardController::class, 'scanQr'])->name('scan-qr');
+        
+        // QR Code Management untuk Student
+        Route::get('/qr-code', [App\Http\Controllers\Student\QrCodeController::class, 'show'])->name('qr-code');
+        Route::get('/qr-code/download', [App\Http\Controllers\Student\QrCodeController::class, 'download'])->name('qr-code.download');
+        Route::post('/qr-code/regenerate', [App\Http\Controllers\Student\QrCodeController::class, 'regenerate'])->name('qr-code.regenerate');
+        
+        // Profile Management
+        Route::get('/profile', [App\Http\Controllers\Student\ProfileController::class, 'show'])->name('profile');
+        Route::put('/profile', [App\Http\Controllers\Student\ProfileController::class, 'update'])->name('profile.update');
         
         // Change Password
         Route::get('/change-password', [App\Http\Controllers\Student\AuthController::class, 'showChangePasswordForm'])->name('change-password');

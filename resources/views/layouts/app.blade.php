@@ -228,10 +228,10 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('admin.qr-code.*') ? 'active' : '' }}" 
-                               href="{{ route('admin.qr-code.today') }}">
-                                <i class="bi bi-qr-code"></i>
-                                QR Code Harian
+                            <a class="nav-link {{ request()->routeIs('admin.scanner') ? 'active' : '' }}" 
+                               href="{{ route('admin.scanner') }}">
+                                <i class="bi bi-qr-code-scan"></i>
+                                QR Scanner
                             </a>
                         </li>
                     </ul>
