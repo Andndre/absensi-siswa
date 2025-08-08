@@ -57,6 +57,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // Student Routes
     Route::resource('students', StudentController::class);
     
+    // Student Import/Export Routes
+    Route::get('/students/template/download', [StudentController::class, 'downloadTemplate'])->name('students.template');
+    Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
+    Route::post('/students/export', [StudentController::class, 'export'])->name('students.export');
+    
     // School Class Routes
     Route::resource('classes', SchoolClassController::class);
     

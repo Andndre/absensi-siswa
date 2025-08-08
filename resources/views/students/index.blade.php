@@ -5,14 +5,31 @@
     <!-- Header -->
     <div class="row">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 text-primary">
-                    <i class="bi bi-people-fill me-2"></i>Manajemen Siswa
-                </h1>
-                <div>
-                    <a href="{{ route('admin.students.create') }}" class="btn btn-primary">
-                        <i class="bi bi-plus-circle me-1"></i>Tambah Siswa
-                    </a>
+            <div class="mb-4">
+                <!-- Header Title -->
+                <div class="text-center text-lg-start mb-3 mb-lg-4">
+                    <h1 class="h3 text-primary mb-0">
+                        <i class="bi bi-people-fill me-2"></i>Manajemen Siswa
+                    </h1>
+                </div>
+                
+                <!-- Action Buttons - Responsive Layout -->
+                <div class="row g-2 justify-content-center">
+                    <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+                        <button type="button" class="btn btn-info w-100" data-bs-toggle="modal" data-bs-target="#exportModal">
+                            <i class="bi bi-download me-2"></i>Export Excel
+                        </button>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+                        <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#importModal">
+                            <i class="bi bi-file-earmark-excel me-2"></i>Import Excel
+                        </button>
+                    </div>
+                    <div class="col-12 col-md-12 col-lg-4 col-xl-3">
+                        <a href="{{ route('admin.students.create') }}" class="btn btn-primary w-100">
+                            <i class="bi bi-plus-circle me-2"></i>Tambah Siswa
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -29,6 +46,13 @@
     @if(session('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if(session('warning'))
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>{{ session('warning') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
@@ -208,6 +232,144 @@
     </div>
 </div>
 
+<!-- Modal Export Excel -->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="exportModalLabel">
+                    <i class="bi bi-download me-2"></i>Export Data Siswa ke Excel
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('admin.students.export') }}" method="POST" id="exportForm">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <div class="alert alert-info border-0" style="background: linear-gradient(135deg, #e7f3ff 0%, #f0f8ff 100%);">
+                            <h6 class="alert-heading">
+                                <i class="bi bi-info-circle me-1"></i>Export Data Siswa
+                            </h6>
+                            <small>
+                                Pilih kelas yang ingin diexport ke file Excel. Data yang diexport meliputi: Nama, NIS, Kelas, dan No. WhatsApp Ortu.
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="export_class_id" class="form-label">
+                            <i class="bi bi-building me-1"></i>Pilih Kelas
+                        </label>
+                        <select class="form-select" id="export_class_id" name="class_id">
+                            <option value="">Semua Kelas</option>
+                            @foreach($classes as $class)
+                                <option value="{{ $class->id }}">{{ $class->name }}</option>
+                            @endforeach
+                        </select>
+                        <small class="text-muted">
+                            Pilih "Semua Kelas" untuk mengexport seluruh data siswa
+                        </small>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="include_inactive" name="include_inactive" value="1">
+                        <label class="form-check-label" for="include_inactive">
+                            <small>Sertakan siswa yang tidak aktif</small>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Batal
+                    </button>
+                    <button type="submit" class="btn btn-info">
+                        <i class="bi bi-download me-1"></i>Download Excel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Import Excel -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="importModalLabel">
+                    <i class="bi bi-file-earmark-excel me-2"></i>Import Data Siswa dari Excel
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('admin.students.import') }}" method="POST" enctype="multipart/form-data" id="importForm">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <div class="alert alert-info border-0" style="background: linear-gradient(135deg, #e7f3ff 0%, #f0f8ff 100%);">
+                            <h6 class="alert-heading">
+                                <i class="bi bi-info-circle me-1"></i>Petunjuk Import
+                            </h6>
+                            <small>
+                                1. Download template Excel terlebih dahulu<br>
+                                2. Isi data siswa sesuai format yang tersedia<br>
+                                3. Upload file Excel yang sudah diisi<br>
+                                4. Pastikan format file adalah .xlsx atau .xls
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="bi bi-download me-1"></i>Download Template
+                        </label>
+                        <div>
+                            <a href="{{ route('admin.students.template') }}" class="btn btn-outline-success">
+                                <i class="bi bi-file-earmark-excel me-1"></i>Download Template Excel
+                            </a>
+                            <small class="text-muted d-block mt-1">
+                                Template berisi kolom: Nama, NIS, Kelas, No. WhatsApp Ortu
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="excel_file" class="form-label">
+                            <i class="bi bi-upload me-1"></i>Upload File Excel
+                        </label>
+                        <input type="file" class="form-control" id="excel_file" name="excel_file" 
+                               accept=".xlsx,.xls" required>
+                        <div class="invalid-feedback">
+                            Silakan pilih file Excel yang akan diimport.
+                        </div>
+                    </div>
+                    
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="replace_existing" name="replace_existing" value="1">
+                        <label class="form-check-label" for="replace_existing">
+                            <small>Update data jika NIS sudah ada (jika tidak dicentang, data duplikat akan diabaikan)</small>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="create_class" name="create_class" value="1" checked>
+                        <label class="form-check-label" for="create_class">
+                            <small>Buat kelas otomatis jika tidak ditemukan</small>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Batal
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-upload me-1"></i>Import Data
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Modal QR Code -->
 <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -264,6 +426,29 @@
     
     .form-select-sm {
         font-size: 0.875rem;
+    }
+    
+    /* Mobile responsive header buttons */
+    .btn {
+        font-size: 0.875rem;
+        padding: 0.75rem 1rem;
+        min-height: 48px; /* Touch-friendly button height */
+    }
+    
+    .btn i {
+        font-size: 1rem;
+    }
+    
+    /* Header spacing on mobile */
+    .mb-3.mb-lg-4 {
+        margin-bottom: 1rem !important;
+    }
+}
+
+/* Medium and Large screen improvements */
+@media (min-width: 768px) {
+    .mb-3.mb-lg-4 {
+        margin-bottom: 1.5rem !important;
     }
 }
 
@@ -614,6 +799,79 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+    
+    // Import form validation
+    const importForm = document.getElementById('importForm');
+    const fileInput = document.getElementById('excel_file');
+    
+    if (importForm && fileInput) {
+        importForm.addEventListener('submit', function(e) {
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                e.preventDefault();
+                fileInput.classList.add('is-invalid');
+                return false;
+            }
+            
+            // Check file type
+            const allowedTypes = [
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+                'application/vnd.ms-excel' // .xls
+            ];
+            
+            if (!allowedTypes.includes(file.type)) {
+                e.preventDefault();
+                alert('Format file tidak valid! Harap upload file Excel (.xlsx atau .xls)');
+                fileInput.classList.add('is-invalid');
+                return false;
+            }
+            
+            // Check file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                e.preventDefault();
+                alert('Ukuran file terlalu besar! Maksimal 2MB');
+                fileInput.classList.add('is-invalid');
+                return false;
+            }
+            
+            // Show loading state
+            const submitBtn = importForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="bi bi-spinner-border spinner-border-sm me-1"></i>Mengimport...';
+            submitBtn.disabled = true;
+            
+            // Reset in case of error (form doesn't submit)
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 10000);
+        });
+        
+        // Reset validation on file change
+        fileInput.addEventListener('change', function() {
+            this.classList.remove('is-invalid');
+        });
+    }
+    
+    // Export form handling
+    const exportForm = document.getElementById('exportForm');
+    
+    if (exportForm) {
+        exportForm.addEventListener('submit', function(e) {
+            // Show loading state
+            const submitBtn = exportForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="bi bi-spinner-border spinner-border-sm me-1"></i>Generating...';
+            submitBtn.disabled = true;
+            
+            // Reset after a delay (in case download starts)
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 3000);
+        });
+    }
 });
 </script>
 @endsection
