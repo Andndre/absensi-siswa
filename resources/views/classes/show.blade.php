@@ -87,7 +87,7 @@
                                         <th width="10%">#</th>
                                         <th>NIS</th>
                                         <th>Nama Siswa</th>
-                                        <th width="20%">Aksi</th>
+                                        <th width="25%">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -105,6 +105,14 @@
                                                class="btn btn-sm btn-outline-warning" title="Edit">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
+                                            <form action="{{ route('admin.students.destroy', $student) }}" method="POST" class="d-inline"
+                                                  onsubmit="return confirm('Yakin ingin menghapus siswa {{ $student->name }} ({{ $student->nis }})? Semua data absensi siswa ini akan ikut terhapus!')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                     @endforeach

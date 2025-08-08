@@ -146,7 +146,7 @@ class StudentController extends Controller
     {
         $student->delete();
         
-        return redirect()->route('admin.students.index')
+        return redirect()->back()
                         ->with('success', 'Siswa berhasil dihapus.');
     }
     
