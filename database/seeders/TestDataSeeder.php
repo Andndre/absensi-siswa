@@ -16,16 +16,6 @@ class TestDataSeeder extends Seeder
      */
     public function run(): void
     {
-        // Buat admin user jika belum ada
-        if (!User::where('email', 'admin@sekolah.id')->exists()) {
-            User::create([
-                'name' => 'Administrator',
-                'email' => 'admin@sekolah.id',
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-            ]);
-        }
-
         // Buat kelas jika belum ada
         $kelas = SchoolClass::firstOrCreate(
             ['name' => 'X IPA 1']
@@ -74,7 +64,6 @@ class TestDataSeeder extends Seeder
         }
 
         $this->command->info('Test data seeded successfully!');
-        $this->command->info('Admin login: admin@sekolah.id / password');
         $this->command->info('Student login example: 20240001 / 20240001');
     }
 }
